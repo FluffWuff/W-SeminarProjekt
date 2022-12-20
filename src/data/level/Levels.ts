@@ -1,11 +1,11 @@
-export class Level {
+export class DataLevel {
 
     public currentTimer: number
     public grid: String[][]
 
     routines: String[][] = []
 
-    constructor(public levelConfig: LevelConfig) {
+    constructor(public levelConfig: DataLevelConfig) {
         this.grid = []
 
         for (var i = 0; i < this.levelConfig.rows; i++) {
@@ -52,7 +52,7 @@ export class Level {
     }
 }
 
-type LevelConfig = {
+type DataLevelConfig = {
     rows: number,
     columns: number,
     maxTime: number,

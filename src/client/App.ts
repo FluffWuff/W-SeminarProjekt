@@ -1,3 +1,4 @@
+import { GameScene } from "./scenes/GameScene"
 import { StartScene } from "./scenes/StartScene"
 
 var config: Phaser.Types.Core.GameConfig = {
@@ -7,7 +8,8 @@ var config: Phaser.Types.Core.GameConfig = {
     parent: 'game',
     antialias: false,
     scene: [
-        new StartScene()
+        new StartScene(),
+        new GameScene()
     ],
     physics: {
         default: "arcade",

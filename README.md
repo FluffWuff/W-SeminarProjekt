@@ -1,17 +1,22 @@
 
 ---
-## Singleplayer:
+## SingleplayerScene:
 
-5 Buttons -> Level 1 bis Level 5 
+- [ ] 5 Buttons -> Level 1 bis Level 5 
+- [ ] onButtonClick: Level start mit gewählter Schwierigkeit
 
-onButtonClick: Level start mit gewählter Schwierigkeit
-
-### Normaler Spielablauf:
+### TODO: Genereller Spielablauf:
 
 - [X] Routinen generieren
 - [ ] Routinen in Spielfeld setzen
 - [X] Restliches Spielfeld ausfüllen
 - [ ] Spielfeld projezieren
+    - SVG Graphiken:
+      - [ ] Buchstaben
+      - [ ] Zahlen
+    - Figuren:
+      - [ ] Ausgewähltes Feld
+      - [ ] Momentane bewegliche Reihe
 - [ ] Bewegung im Spielfeld einbauen
   - [ ] Horizontale bzw. vertikale Linie einbauen
   - [ ] Wechsel bei onClick
