@@ -28,10 +28,20 @@ export class Level {
                 this.routines[i][j] = this.createMemoryAddress()
             }
         }
+
+        //Routinen ins Spielfeld einfügen:
+        //Nehme random zahl für Abstand, boolean ob horizontal oder vertikal
+        
     }
 
     private fillGridUp() {
-        
+        for(var i = 0; i < this.grid.length; i++) {
+            for(var j = 0; j < this.grid[i].length; j++) {
+               if(this.grid[i][j] == " ") {
+                  this.grid[i][j] = this.createMemoryAddress()
+               }
+            }
+        }
     }
 
     private createMemoryAddress(): string {

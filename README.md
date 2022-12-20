@@ -10,7 +10,7 @@ onButtonClick: Level start mit gewählter Schwierigkeit
 
 - [X] Routinen generieren
 - [ ] Routinen in Spielfeld setzen
-- [ ] Restliches Spielfeld ausfüllen
+- [X] Restliches Spielfeld ausfüllen
 - [ ] Spielfeld projezieren
 - [ ] Bewegung im Spielfeld einbauen
   - [ ] Horizontale bzw. vertikale Linie einbauen
