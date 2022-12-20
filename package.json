@@ -1,0 +1,20 @@
+{
+  "name": "te5hackingtrainer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Alexander Model",
+  "license": "ISC",
+  "dependencies": {
+    "@types/express": "^4.17.15",
+    "@types/ws": "^8.5.3",
+    "express": "^4.18.2",
+    "express-static": "^1.2.6",
+    "phaser": "^3.55.2",
+    "typescript": "^4.8.4",
+    "ws": "^8.11.0"
+  }
+}
