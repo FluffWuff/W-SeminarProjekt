@@ -13,14 +13,6 @@ export class GameLevel {
     constructor(private scene: Phaser.Scene, private levelConfig: GameLevelConfig) {
         this.grid = []
 
-        //Gucken, ob es unnötig geworden ist:
-        /*for (var i = 0; i < this.levelConfig.rows; i++) {
-            for (var j = 0; j < this.levelConfig.columns; j++) {
-                this.grid[i][j] = null
-            }
-        }*/
-
-        //this.createMemoryAddress(100, 100)
         this.fillGridUp()
         this.createRoutines()
     }
