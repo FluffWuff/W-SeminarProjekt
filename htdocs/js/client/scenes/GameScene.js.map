@@ -1,0 +1,1 @@
+{"version":3,"file":"GameScene.js","sourceRoot":"","sources":["../../../../src/client/scenes/GameScene.ts"],"names":[],"mappings":"AAAA,MAAM,OAAO,SAAU,SAAQ,MAAM,CAAC,KAAK;IAEvC;QACI,KAAK,CAAC;YACF,GAAG,EAAE,WAAW;SACnB,CAAC,CAAA;IACN,CAAC;IAED,IAAI,CAAC,IAAY;IAEjB,CAAC;IAED,OAAO;IAEP,CAAC;IAED,MAAM;IAEN,CAAC;CAGJ"}

@@ -1,5 +1,5 @@
-import { GameScene } from "./scenes/GameScene"
-import { StartScene } from "./scenes/StartScene"
+import { GameScene } from "./scenes/GameScene.js"
+import { StartScene } from "./scenes/StartScene.js"
 
 var config: Phaser.Types.Core.GameConfig = {
     width: 1920,

@@ -1,7 +1,6 @@
-import * as express from 'express';
+/*import * as express from 'express';
 import * as serveStatic from 'serve-static';
 import * as ws from 'ws';
-import { ClientMessage, ServerMessageNewClient, ServerMessageSendCoordinates, ServerMessageClientGone, ServerMessage, ClientMessageSendCoordinates } from '../Data';
 
 type ClientData = {
     socket: ws,
@@ -32,7 +31,7 @@ export class GameServer {
          * To open a websocket connection a client send a http upgrade-request to the http-server.
          * The http-server then passes the underlying tcp-connection to the websocket server.
          */
-        server.on('upgrade', (request, socket, head) => {
+        /*server.on('upgrade', (request, socket, head) => {
             that.wsServer.handleUpgrade(request, socket, head, socket => {
 
                 that.onWebSocketConnect(socket);
@@ -53,7 +52,7 @@ export class GameServer {
     /**
      * This event handler is called whenever a client connnects
      * @param socket 
-     */
+     *//*
     onWebSocketConnect(socket: ws) {
 
     }
@@ -152,3 +151,4 @@ export class GameServer {
 }
 
 new GameServer();
+*/
