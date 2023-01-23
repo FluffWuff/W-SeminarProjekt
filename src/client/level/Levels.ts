@@ -1,5 +1,5 @@
 import { Button } from "../util/Button.js"
-import { GR_START_POS_X, GR_START_POS_Y, MA_BACKGROUND_COLOR, MA_HEIGHT, MA_START_POS_X, MA_START_POS_Y, MA_TEXT_COLOR, MA_TEXT_SIZE, MA_WIDH, RO_HEIGHT, RO_START_POS_X, RO_START_POS_Y, RO_WIDTH } from "../util/Constants.js"
+import { DISTANCE_MA_RO, GR_START_POS_X, GR_START_POS_Y, MA_HEIGHT, MA_START_POS_X, MA_START_POS_Y, MA_PRIMARY_COLOR, MA_WIDH, RO_HEIGHT, RO_WIDTH } from "../util/Constants.js"
 
 type MemoryAddress = Button
 
@@ -20,17 +20,34 @@ export class GameLevel {
     private createRoutines() {
         let amount = Math.round(Math.random() * (this.levelConfig.maxRoutines - this.levelConfig.minRoutines) + this.levelConfig.minRoutines)
         //imax Anzahl der Routinen im Array
-        let routineText = this.scene.add.text(RO_START_POS_X, RO_START_POS_Y, "override routines", {
+        let routineText = this.scene.add.text(MA_WIDH*this.levelConfig.columns*1.025+MA_START_POS_X*this.scene.cameras.main.centerX*2+DISTANCE_MA_RO,
+            MA_START_POS_Y*this.scene.cameras.main.centerY*2, "override routines", {
             align: 'left',
             font: '16px DS-DIGII',
             //backgroundColor: MA_BACKGROUND_COLOR,
-            color: MA_TEXT_COLOR
+            color: "#"+MA_PRIMARY_COLOR.toString(16)
         })
         for(var i = 0; i < amount; i++) { 
             this.routines[i] = []
-            // jmax als Laenge der jeweligen Routine
+            let isVer = Math.random() < 0.5
+            let lastH = Math.floor(this.levelConfig.columns * Math.random())
+            let lastV = Math.floor(this.levelConfig.rows * Math.random())
+            //console.log("Creating new Routine with startH " + lastH + " and startV " + lastV)
             for(var j = 0; j < Math.round(Math.random() * (this.levelConfig.maxRoutineLength - this.levelConfig.minRoutineLength) + this.levelConfig.minRoutineLength); j++) {
-                this.routines[i][j] = this.createMemoryAddress(RO_WIDTH*j*1.025+RO_START_POS_X-16, RO_HEIGHT*i*1.025+RO_START_POS_Y, true)
+                let text = this.grid[lastV][lastH].text
+                this.routines[i][j] =  this.createMemoryAddress(RO_WIDTH*j*1.025+MA_WIDH*this.levelConfig.columns*1.025+MA_START_POS_X*this.scene.cameras.main.centerX*2+DISTANCE_MA_RO-16,
+                    RO_HEIGHT*i*1.025+MA_START_POS_Y*this.scene.cameras.main.centerY*2, true, text)                
+                if(isVer) {
+                    let newV = Math.floor(this.levelConfig.rows * Math.random())
+                    while(newV == lastV) newV = Math.floor(this.levelConfig.rows * Math.random())
+                    lastV = newV
+                } else {
+                    let newH = Math.floor(this.levelConfig.columns * Math.random())
+                    while(newH == lastH) newH = Math.floor(this.levelConfig.columns * Math.random())
+                    lastH = newH
+                }
+                //console.log("Next h: " + lastH + " v: "+ lastV)
+                isVer = !isVer
             }
         }
 
@@ -40,30 +57,33 @@ export class GameLevel {
     }
 
     private fillGridUp() {
-        let gridText = this.scene.add.text(MA_START_POS_X, MA_START_POS_Y, "memory matrix", {
+        let gridText = this.scene.add.text(MA_START_POS_X*this.scene.cameras.main.centerX*2, MA_START_POS_Y*this.scene.cameras.main.centerY*2, "memory matrix", {
             align: 'left',
-            font: '16px DS-DIGII',
+            font: '24px DS-DIGII',
             //backgroundColor: MA_BACKGROUND_COLOR,
-            color: MA_TEXT_COLOR
+            color: "#"+MA_PRIMARY_COLOR.toString(16)
         })
         for(var i = 0; i < this.levelConfig.rows; i++) {
             this.grid[i] = []
             for(var j = 0; j < this.levelConfig.columns; j++) {
-                  this.grid[i][j] = this.createMemoryAddress(MA_WIDH*j*1.025+MA_START_POS_X, MA_HEIGHT*i*1.025+MA_START_POS_Y+16, false)
+                  this.grid[i][j] = this.createMemoryAddress(MA_WIDH*j*1.025+MA_START_POS_X*this.scene.cameras.main.centerX*2,
+                     MA_HEIGHT*i*1.025+MA_START_POS_Y*this.scene.cameras.main.centerY*2+25, false)
             }
         }
     }
 
-    private createMemoryAddress(x: number, y: number, isSmall: boolean): MemoryAddress {
-        let number = Math.round(Math.random() * (9-2) + 2)
-        let letters = ["A", "B", "C", "D", "E", "F"]
-        let letter = letters[Math.floor(Math.random()*letters.length)]
-        let text = letter+number
+    private createMemoryAddress(x: number, y: number, isSmall: boolean, text?: string): MemoryAddress {
+        if(text == null) {
+            let number = Math.round(Math.random() * (9-2) + 2)
+            let letters = ["A", "B", "C", "D", "E", "F", "X"]
+            let letter = letters[Math.floor(Math.random()*letters.length)]
+            text = letter+number
+        }
         return new Button(this.scene, x, y, text, isSmall, {
             align: 'center',
             font: '64px DS-DIGII',
             //backgroundColor: MA_BACKGROUND_COLOR,
-            color: MA_TEXT_COLOR,
+            
         }, () => {})
     }
 }

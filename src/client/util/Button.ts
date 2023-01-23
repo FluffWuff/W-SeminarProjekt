@@ -1,8 +1,8 @@
-import { MA_BACKGROUND_32, MA_BACKGROUND_64, MA_BACKGROUND_COLOR } from "./Constants.js";
+import { MA_BACKGROUND_32, MA_BACKGROUND_64, MA_PRIMARY_COLOR, MA_SELECTED_COLOR } from "./Constants.js";
 
 export class Button extends Phaser.GameObjects.Group {
 
-    constructor(scene: Phaser.Scene, x: number, y: number, text: string, isSmall: boolean, style: object, callback: () => void) {
+    constructor(scene: Phaser.Scene, x: number, y: number, public text: string, isSmall: boolean, style: object, callback: () => void) {
         super(scene);
         
         let key = MA_BACKGROUND_64
@@ -27,18 +27,18 @@ export class Button extends Phaser.GameObjects.Group {
         textElement.setFontSize(fontSize)
         textElement.setOrigin(0.5, 0.5)
         textElement.setPosition(center64.x, center64.y)
-        imageElement.setTint(MA_BACKGROUND_COLOR)
+        
         this.add(textElement, true)
         this.add(imageElement, true)
-        //this.setStyle(style);
+        this.setTint(parseInt(MA_PRIMARY_COLOR.toString(16), 16));
         
         scene.add.existing(this);
 
 
         //this.on('pointerdown', () => callback());
-        //this.on('pointerover', () => this.setStyle({ fill: '#f39c12' }), this)
-        //this.on('pointerout', () => this.setStyle({ fill: '#FFF' }), this);
-        console.log("Button " + text + " wurde instanziert.");
+        textElement.on('pointerover', () => this.setTint(parseInt(MA_SELECTED_COLOR.toString(16), 16)), this)
+        textElement.on('pointerout', () => this.setTint(parseInt(MA_PRIMARY_COLOR.toString(16), 16)), this);
+        //console.log("Button " + text + " wurde instanziert.");
 
     }
 

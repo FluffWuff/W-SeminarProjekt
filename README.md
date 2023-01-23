@@ -7,16 +7,9 @@
 
 ### TODO: Genereller Spielablauf:
 
-- [X] Routinen generieren
-- [ ] Routinen in Spielfeld setzen
-- [X] Restliches Spielfeld ausfüllen
-- [ ] Spielfeld projezieren
-    - SVG Graphiken:
-      - [ ] Buchstaben
-      - [ ] Zahlen
-    - Figuren:
-      - [ ] Ausgewähltes Feld
-      - [ ] Momentane bewegliche Reihe
+- [X] Spielfeld generieren / projezieren
+- [X] Routinen aus dem Spielfeld generieren und projezieren
+- [ ] MemoryAddress Box repainten
 - [ ] Bewegung im Spielfeld einbauen
   - [ ] Horizontale bzw. vertikale Linie einbauen
   - [ ] Wechsel bei onClick
