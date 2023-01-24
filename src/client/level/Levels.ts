@@ -39,6 +39,7 @@ export class GameLevel {
         }
     }
 
+    // NICHT ANFASSEN
     private createRoutines() {
         let amount = Math.round(Math.random() * (this.levelConfig.maxRoutines - this.levelConfig.minRoutines) + this.levelConfig.minRoutines)
         //imax Anzahl der Routinen im Array

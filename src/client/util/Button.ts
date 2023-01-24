@@ -34,10 +34,11 @@ export class Button extends Phaser.GameObjects.Group {
         
         scene.add.existing(this);
 
-
+        //find onclick event
+        
         //this.on('pointerdown', () => callback());
-        textElement.on('pointerover', () => this.setTint(parseInt(MA_SELECTED_COLOR.toString(16), 16)), this)
-        textElement.on('pointerout', () => this.setTint(parseInt(MA_PRIMARY_COLOR.toString(16), 16)), this);
+        //textElement.on('pointerover', () => this.setTint(parseInt(MA_SELECTED_COLOR.toString(16), 16)), this)
+        //textElement.on('pointerout', () => this.setTint(parseInt(MA_PRIMARY_COLOR.toString(16), 16)), this);
         //console.log("Button " + text + " wurde instanziert.");
 
     }
