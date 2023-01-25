@@ -14,7 +14,9 @@
   - [ ] Horizontale bzw. vertikale Linie einbauen
   - [ ] Wechsel bei onClick
   - [ ] Überprüfen, ob Feld bei onClick valid ist
-- [ ] usw.
+- [ ] Overflowmanager einbauen
+- [ ] Details-Component createn
+- [ ] Timer-Component createn
 
 ---
 ## Multiplayer Ideen (wenn genug Zeit da ist):

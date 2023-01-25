@@ -41,13 +41,12 @@ export class GameLevel {
 
     // NICHT ANFASSEN
     private createRoutines() {
+        //Anzahl der Routinen
         let amount = Math.round(Math.random() * (this.levelConfig.maxRoutines - this.levelConfig.minRoutines) + this.levelConfig.minRoutines)
-        //imax Anzahl der Routinen im Array
         let routineText = this.scene.add.text(MA_WIDH*this.levelConfig.columns*1.025+MA_START_POS_X*this.scene.cameras.main.centerX*2+DISTANCE_MA_RO,
             MA_START_POS_Y*this.scene.cameras.main.centerY*2, "override routines", {
             align: 'left',
             font: '16px DS-DIGII',
-            //backgroundColor: MA_BACKGROUND_COLOR,
             color: "#"+MA_PRIMARY_COLOR.toString(16)
         })
         for(var i = 0; i < amount; i++) { 
@@ -58,7 +57,8 @@ export class GameLevel {
             //console.log("Creating new Routine with startH " + lastH + " and startV " + lastV)
             for(var j = 0; j < Math.round(Math.random() * (this.levelConfig.maxRoutineLength - this.levelConfig.minRoutineLength) + this.levelConfig.minRoutineLength); j++) {
                 let text = this.grid[lastV][lastH].text
-                this.routines[i][j] =  this.createMemoryAddress(RO_WIDTH*j*1.025+MA_WIDH*this.levelConfig.columns*1.025+MA_START_POS_X*this.scene.cameras.main.centerX*2+DISTANCE_MA_RO-16,
+                this.routines[i][j] =  this.createMemoryAddress(
+                    RO_WIDTH*j*1.025+MA_WIDH*this.levelConfig.columns*1.025+MA_START_POS_X*this.scene.cameras.main.centerX*2+DISTANCE_MA_RO-16,
                     RO_HEIGHT*i*1.025+MA_START_POS_Y*this.scene.cameras.main.centerY*2, true, text)                
                 if(isVer) {
                     let newV = Math.floor(this.levelConfig.rows * Math.random())
@@ -73,12 +73,10 @@ export class GameLevel {
                 isVer = !isVer
             }
         }
-
-        //Routinen ins Spielfeld einfügen:
-        //Nehme random zahl für Abstand, boolean ob horizontal oder vertikal
         
     }
 
+    //REWORK:
     private createOverflow() {
         this.overflowText = this.scene.add.text(MA_START_POS_X*this.scene.cameras.main.centerX*2+DISTANCE_MA_OV_X,
             MA_START_POS_Y*this.scene.cameras.main.centerY*2-DISTANCE_MA_OV_Y, "overflow ("+this.currentOverflow+"/"+this.levelConfig.maxOverflow+")", {

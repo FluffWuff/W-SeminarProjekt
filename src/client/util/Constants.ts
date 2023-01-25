@@ -1,10 +1,19 @@
 import { GameLevelConfig } from "../level/Levels.js"
 
+
 //Color plate:
 export const greenPrimaryColor = 0x82f676
 export const greenSecondaryColor = 0x102210
 export const yellowColor = 0xa6a666
 export const whiteColor = 0xFFFFFF
+
+//Selectionscene:
+export const SELECTION_TEXT_SIZE_PX = 16
+export const SELECTION_TEXT_Y = 400
+export const SINGLE_PLAYER_TEXT_X = 400
+export const DISTANCE_SINGLE_MULTI_PLAYER_TEXT_X = 50 //Multipler text ist abhängig vom singlePlayerText
+
+
 
 //MemoryAddress/Spielfeld:
 export const MA_WIDH = 64

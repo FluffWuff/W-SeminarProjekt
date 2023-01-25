@@ -34,7 +34,8 @@ export class Button extends Phaser.GameObjects.Group {
         
         scene.add.existing(this);
 
-        //find onclick event
+        //find onclick event:
+        //https://phaser.io/examples/v2/text/text-events
         
         //this.on('pointerdown', () => callback());
         //textElement.on('pointerover', () => this.setTint(parseInt(MA_SELECTED_COLOR.toString(16), 16)), this)
