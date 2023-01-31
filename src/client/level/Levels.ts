@@ -1,5 +1,6 @@
-import { Button } from "../util/Button.js"
 import { DISTANCE_MA_RO, GR_START_POS_X, GR_START_POS_Y, MA_HEIGHT, MA_START_POS_X, MA_START_POS_Y, MA_PRIMARY_COLOR, MA_WIDH, RO_HEIGHT, RO_WIDTH, DISTANCE_MA_OV_X, DISTANCE_MA_OV_Y, OV_COLOR } from "../util/Constants.js"
+import { Button } from "../util/Button.js"
+import { Overflow } from "./Overflow.js"
 
 type MemoryAddress = Button
 
@@ -11,6 +12,7 @@ export class GameLevel {
     public routines: MemoryAddress[][] = []
 
     private currentOverflow = 0
+    private overflow: Overflow
     private overflowText: Phaser.GameObjects.Text
 
     constructor(private scene: Phaser.Scene, private levelConfig: GameLevelConfig) {
@@ -78,6 +80,7 @@ export class GameLevel {
 
     //REWORK:
     private createOverflow() {
+        
         this.overflowText = this.scene.add.text(MA_START_POS_X*this.scene.cameras.main.centerX*2+DISTANCE_MA_OV_X,
             MA_START_POS_Y*this.scene.cameras.main.centerY*2-DISTANCE_MA_OV_Y, "overflow ("+this.currentOverflow+"/"+this.levelConfig.maxOverflow+")", {
             align: 'left',
@@ -112,7 +115,7 @@ export class GameLevel {
             font: '64px DS-DIGII',
             //backgroundColor: MA_BACKGROUND_COLOR,
             
-        }, () => {})
+        })
     }
 }
 

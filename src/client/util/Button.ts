@@ -2,7 +2,7 @@ import { MA_BACKGROUND_32, MA_BACKGROUND_64, MA_PRIMARY_COLOR, MA_SELECTED_COLOR
 
 export class Button extends Phaser.GameObjects.Group {
 
-    constructor(scene: Phaser.Scene, x: number, y: number, public text: string, isSmall: boolean, style: object, callback: () => void) {
+    constructor(scene: Phaser.Scene, x: number, y: number, public text: string, isSmall: boolean, style: object) {
         super(scene);
         
         let key = MA_BACKGROUND_64

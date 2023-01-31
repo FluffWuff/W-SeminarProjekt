@@ -9,9 +9,6 @@ export class GameScene extends Phaser.Scene {
         })
     }
 
-    init(data) {
-
-    }
 
     preload() {
         this.load.image(MA_BACKGROUND_32, 'assets/bitmaps/ma32.png')
