@@ -1,9 +1,11 @@
+import { GameLevel } from "../level/Levels.js";
 import { MA_BACKGROUND_32, MA_BACKGROUND_64, MA_PRIMARY_COLOR, MA_SELECTED_COLOR } from "./Constants.js";
 
 export class Button extends Phaser.GameObjects.Group {
 
-    constructor(scene: Phaser.Scene, x: number, y: number, public text: string, isSmall: boolean, style: object) {
-        super(scene);
+
+    constructor(gameLevel: GameLevel, x: number, y: number, public text: string, public isSmall: boolean, style: object) {
+        super(gameLevel.scene);
         
         let key = MA_BACKGROUND_64
         let fontSize = 48
@@ -13,8 +15,8 @@ export class Button extends Phaser.GameObjects.Group {
             fontSize = 24
         }
 
-        let textElement = new Phaser.GameObjects.Text(scene, x, y, text, style)
-        let imageElement = scene.make.image({
+        let textElement = new Phaser.GameObjects.Text(gameLevel.scene, x, y, text, style)
+        let imageElement = gameLevel.scene.make.image({
             x: x,
             y: y,
             key: key,
@@ -32,8 +34,14 @@ export class Button extends Phaser.GameObjects.Group {
         this.add(imageElement, true)
         this.setTint(parseInt(MA_PRIMARY_COLOR.toString(16), 16));
         
-        scene.add.existing(this);
-
+        gameLevel.scene.add.existing(this);
+        //pointerover, pointerdown, pointerout
+        imageElement.setInteractive().on('pointerover', (pointer, localX, localY, event) => {
+            gameLevel.onOver(this)
+        })
+        imageElement.setInteractive().on('pointerout', (pointer, localX, localY, event) => {
+            gameLevel.onOut(this)
+        })
         //find onclick event:
         //https://phaser.io/examples/v2/text/text-events
         

@@ -39,7 +39,7 @@ export const RO_HEIGHT = 32
 
 //Overflow
 export const DISTANCE_MA_OV_X = 150
-export const DISTANCE_MA_OV_Y = 150
+export const DISTANCE_MA_OV_Y = 250
 export const OV_COLOR = whiteColor
 
 
@@ -62,7 +62,7 @@ export const LEVEL_3_GAME_LEVEL_CONFIG: GameLevelConfig = {
     minRoutines: 3, 
     maxRoutines: 4,
     minRoutineLength: 2,
-    maxRoutineLength: 5
+    maxRoutineLength: 4
 }
 //REWORK:
 export const LEVEL_4_GAME_LEVEL_CONFIG: GameLevelConfig = {

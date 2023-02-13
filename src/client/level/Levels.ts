@@ -1,10 +1,10 @@
-import { DISTANCE_MA_RO, GR_START_POS_X, GR_START_POS_Y, MA_HEIGHT, MA_START_POS_X, MA_START_POS_Y, MA_PRIMARY_COLOR, MA_WIDH, RO_HEIGHT, RO_WIDTH, DISTANCE_MA_OV_X, DISTANCE_MA_OV_Y, OV_COLOR } from "../util/Constants.js"
+import { DISTANCE_MA_RO, GR_START_POS_X, GR_START_POS_Y, MA_HEIGHT, MA_START_POS_X, MA_START_POS_Y, MA_PRIMARY_COLOR, MA_WIDH, RO_HEIGHT, RO_WIDTH, DISTANCE_MA_OV_X, DISTANCE_MA_OV_Y, OV_COLOR, MA_SELECTED_COLOR } from "../util/Constants.js"
 import { Button } from "../util/Button.js"
-import { Overflow } from "./Overflow.js"
+import { OverflowManager } from "./Overflow.js"
 
 type MemoryAddress = Button
 
-export class GameLevel {
+export class GameLevel implements ButtonListener {
 
     public currentTimer: number
     public grid: MemoryAddress[][]
@@ -12,15 +12,17 @@ export class GameLevel {
     public routines: MemoryAddress[][] = []
 
     private currentOverflow = 0
-    private overflow: Overflow
+    private overflow: OverflowManager
     private overflowText: Phaser.GameObjects.Text
+    
+    private currentSelected: MemoryAddress[] = []
 
-    constructor(private scene: Phaser.Scene, private levelConfig: GameLevelConfig) {
+    constructor(public scene: Phaser.Scene, private levelConfig: GameLevelConfig) {
         this.grid = []
 
         this.fillGridUp()
         this.createRoutines()
-        this.createOverflow()
+        this.overflow = new OverflowManager(this.scene, this.levelConfig.maxOverflow)
         this.createTimer()
         this.createDetails()
     }
@@ -78,19 +80,6 @@ export class GameLevel {
         
     }
 
-    //REWORK:
-    private createOverflow() {
-        
-        this.overflowText = this.scene.add.text(MA_START_POS_X*this.scene.cameras.main.centerX*2+DISTANCE_MA_OV_X,
-            MA_START_POS_Y*this.scene.cameras.main.centerY*2-DISTANCE_MA_OV_Y, "overflow ("+this.currentOverflow+"/"+this.levelConfig.maxOverflow+")", {
-            align: 'left',
-            font: '20px DS-DIGII',
-            //backgroundColor: MA_BACKGROUND_COLOR,
-            color: "#"+OV_COLOR.toString(16)
-        })
-        
-    }
-
     private updateOverflow() {
         this.overflowText.setText("overflow ("+this.currentOverflow+"/"+this.levelConfig.maxOverflow+")")
     }
@@ -103,6 +92,36 @@ export class GameLevel {
 
     }
 
+    onOver(button: Button) {
+        if(button.isSmall) {
+            //Finde alle Felder, die den gleichen Wert haben
+            for(var i = 0; i < this.grid.length; i++) {
+                for(var j = 0; j < this.grid[i].length; j++) {
+                    let gridElement = this.grid[i][j]
+                    if(button.text == gridElement.text) {
+                        this.currentSelected.push(gridElement)
+                        gridElement.setTint(MA_SELECTED_COLOR)
+                    }
+                }
+            }
+        }
+        button.setTint(MA_SELECTED_COLOR)
+    }
+
+    onDown(button: Button) {
+        
+    }
+
+    onOut(button: Button) {
+        if(button.isSmall) {
+            for(var i = 0; i < this.currentSelected.length; i++) {
+                this.currentSelected[i].setTint(MA_PRIMARY_COLOR)
+            }
+            this.currentSelected = []
+        }
+        button.setTint(MA_PRIMARY_COLOR)
+    }
+
     private createMemoryAddress(x: number, y: number, isSmall: boolean, text?: string): MemoryAddress {
         if(text == null) {
             let number = Math.round(Math.random() * (9-2) + 2)
@@ -110,7 +129,7 @@ export class GameLevel {
             let letter = letters[Math.floor(Math.random()*letters.length)]
             text = letter+number
         }
-        return new Button(this.scene, x, y, text, isSmall, {
+        return new Button(this, x, y, text, isSmall, {
             align: 'center',
             font: '64px DS-DIGII',
             //backgroundColor: MA_BACKGROUND_COLOR,
@@ -128,4 +147,14 @@ export type GameLevelConfig = {
     maxRoutines: number,
     minRoutineLength: number,
     maxRoutineLength: number
+}
+
+interface ButtonListener {
+
+    onOver(button: Button);
+
+    onDown(button: Button);
+
+    onOut(button: Button);
+
 }
