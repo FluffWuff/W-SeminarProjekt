@@ -4,8 +4,10 @@ import { GameLevelConfig } from "../level/Levels.js"
 //Color plate:
 export const greenPrimaryColor = 0x82f676
 export const greenSecondaryColor = 0x102210
-export const yellowColor = 0xa6a666
+export const yellowColor = 0xF1F22E
 export const whiteColor = 0xFFFFFF
+export const darkGreenColor = 0x083003
+export const brightGreenColor = 0xa5ff99
 
 //Selectionscene:
 export const SELECTION_TEXT_SIZE_PX = 16
@@ -20,6 +22,8 @@ export const MA_WIDH = 64
 export const MA_HEIGHT = 64
 export const MA_PRIMARY_COLOR = greenPrimaryColor
 export const MA_SELECTED_COLOR = yellowColor
+export const MA_HIDE_COLOR = darkGreenColor
+export const MA_HIGHLIGHT_COLOR = brightGreenColor
 export const MA_TEXT_SIZE = 16
 export const MA_BACKGROUND_32 = 'memoryaddress_background_32'
 export const MA_BACKGROUND_64 = 'memoryaddress_background_64'
@@ -77,7 +81,7 @@ export const LEVEL_4_GAME_LEVEL_CONFIG: GameLevelConfig = {
 }
 export const LEVEL_5_GAME_LEVEL_CONFIG: GameLevelConfig = {
     rows: 5,
-    columns: 4,
+    columns: 6,
     maxTime: 120,
     maxOverflow: 4,
     minRoutines: 3, 

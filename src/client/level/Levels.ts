@@ -1,4 +1,4 @@
-import { DISTANCE_MA_RO, GR_START_POS_X, GR_START_POS_Y, MA_HEIGHT, MA_START_POS_X, MA_START_POS_Y, MA_PRIMARY_COLOR, MA_WIDH, RO_HEIGHT, RO_WIDTH, DISTANCE_MA_OV_X, DISTANCE_MA_OV_Y, OV_COLOR, MA_SELECTED_COLOR } from "../util/Constants.js"
+import { DISTANCE_MA_RO, GR_START_POS_X, GR_START_POS_Y, MA_HEIGHT, MA_START_POS_X, MA_START_POS_Y, MA_PRIMARY_COLOR, MA_WIDH, RO_HEIGHT, RO_WIDTH, DISTANCE_MA_OV_X, DISTANCE_MA_OV_Y, OV_COLOR, MA_SELECTED_COLOR, MA_HIDE_COLOR, MA_HIGHLIGHT_COLOR } from "../util/Constants.js"
 import { Button } from "../util/Button.js"
 import { OverflowManager } from "./Overflow.js"
 
@@ -15,7 +15,11 @@ export class GameLevel implements ButtonListener {
     private overflow: OverflowManager
     private overflowText: Phaser.GameObjects.Text
     
-    private currentSelected: MemoryAddress[] = []
+    private changeableElementList: MemoryAddress[] = []
+
+    private isPlayLineHorizontal = true
+    private playLinePos: [number, MemoryAddress[]] = [0, []]
+    
 
     constructor(public scene: Phaser.Scene, private levelConfig: GameLevelConfig) {
         this.grid = []
@@ -25,6 +29,7 @@ export class GameLevel implements ButtonListener {
         this.overflow = new OverflowManager(this.scene, this.levelConfig.maxOverflow)
         this.createTimer()
         this.createDetails()
+        this.updatePlayLine(0)
     }
 
     private fillGridUp() {
@@ -38,7 +43,7 @@ export class GameLevel implements ButtonListener {
             this.grid[i] = []
             for(var j = 0; j < this.levelConfig.columns; j++) {
                   this.grid[i][j] = this.createMemoryAddress(MA_WIDH*j*1.025+MA_START_POS_X*this.scene.cameras.main.centerX*2,
-                     MA_HEIGHT*i*1.025+MA_START_POS_Y*this.scene.cameras.main.centerY*2+25, false)
+                     MA_HEIGHT*i*1.025+MA_START_POS_Y*this.scene.cameras.main.centerY*2+25, false, j, i)
             }
         }
     }
@@ -63,7 +68,7 @@ export class GameLevel implements ButtonListener {
                 let text = this.grid[lastV][lastH].text
                 this.routines[i][j] =  this.createMemoryAddress(
                     RO_WIDTH*j*1.025+MA_WIDH*this.levelConfig.columns*1.025+MA_START_POS_X*this.scene.cameras.main.centerX*2+DISTANCE_MA_RO-16,
-                    RO_HEIGHT*i*1.025+MA_START_POS_Y*this.scene.cameras.main.centerY*2, true, text)                
+                    RO_HEIGHT*i*1.025+MA_START_POS_Y*this.scene.cameras.main.centerY*2, true, -1, -1, text)                
                 if(isVer) {
                     let newV = Math.floor(this.levelConfig.rows * Math.random())
                     while(newV == lastV) newV = Math.floor(this.levelConfig.rows * Math.random())
@@ -92,17 +97,49 @@ export class GameLevel implements ButtonListener {
 
     }
 
+    private updatePlayLine(pos: number) {
+        //Alte play line zurücksetzen 
+        for(var i = 0; i < this.playLinePos[1].length; i++) {
+            this.playLinePos[1][i].setTint(MA_PRIMARY_COLOR)
+        }
+        this.playLinePos[1] = []
+
+        //neue play line setzen
+        this.playLinePos[0] = pos
+        if(this.isPlayLineHorizontal) {
+            let rowFieldList = this.grid[pos]
+            for(var i = 0; i < rowFieldList.length; i++) {
+                rowFieldList[i].setTint(MA_SELECTED_COLOR)
+                this.playLinePos[1].push(rowFieldList[i])
+            }
+        }
+    }
+
     onOver(button: Button) {
         if(button.isSmall) {
             //Finde alle Felder, die den gleichen Wert haben
             for(var i = 0; i < this.grid.length; i++) {
                 for(var j = 0; j < this.grid[i].length; j++) {
                     let gridElement = this.grid[i][j]
-                    if(button.text == gridElement.text) {
-                        this.currentSelected.push(gridElement)
-                        gridElement.setTint(MA_SELECTED_COLOR)
+                    if(button.text != gridElement.text) {
+                        this.changeableElementList.push(gridElement)
+                        gridElement.setTint(MA_HIDE_COLOR)
                     }
                 }
+            }
+            return;
+        }
+        
+        if(!this.isPlayLineHorizontal) {
+            let rowFieldList = this.grid[button.gridPosY]
+            for(var i = 0; i < rowFieldList.length; i++) {
+                rowFieldList[i].setTint(MA_HIGHLIGHT_COLOR)
+                this.changeableElementList.push(rowFieldList[i])
+            }
+        } else {
+            for(var i = 0; i < this.grid.length; i++) {
+                this.changeableElementList.push(this.grid[i][button.gridPosX])
+                this.grid[i][button.gridPosX].setTint(MA_HIGHLIGHT_COLOR)
             }
         }
         button.setTint(MA_SELECTED_COLOR)
@@ -113,16 +150,16 @@ export class GameLevel implements ButtonListener {
     }
 
     onOut(button: Button) {
-        if(button.isSmall) {
-            for(var i = 0; i < this.currentSelected.length; i++) {
-                this.currentSelected[i].setTint(MA_PRIMARY_COLOR)
+        if(button.isSmall || this.changeableElementList.length != 0) {
+            for(var i = 0; i < this.changeableElementList.length; i++) {
+                this.changeableElementList[i].setTint(MA_PRIMARY_COLOR)
             }
-            this.currentSelected = []
+            this.changeableElementList = []
         }
-        button.setTint(MA_PRIMARY_COLOR)
+        this.updatePlayLine(this.playLinePos[0])
     }
 
-    private createMemoryAddress(x: number, y: number, isSmall: boolean, text?: string): MemoryAddress {
+    private createMemoryAddress(x: number, y: number, isSmall: boolean, gridPosX: number, gridPosY: number, text?: string): MemoryAddress {
         if(text == null) {
             let number = Math.round(Math.random() * (9-2) + 2)
             let letters = ["A", "B", "C", "D", "E", "F", "X"]
@@ -134,7 +171,7 @@ export class GameLevel implements ButtonListener {
             font: '64px DS-DIGII',
             //backgroundColor: MA_BACKGROUND_COLOR,
             
-        })
+        }, gridPosX, gridPosY)
     }
 }
 

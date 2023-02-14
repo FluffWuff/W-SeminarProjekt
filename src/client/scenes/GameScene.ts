@@ -1,5 +1,5 @@
 import { GameLevel } from "../level/Levels.js"
-import { LEVEL_2_GAME_LEVEL_CONFIG, LEVEL_3_GAME_LEVEL_CONFIG, MA_BACKGROUND_32, MA_BACKGROUND_64 } from "../util/Constants.js"
+import { LEVEL_2_GAME_LEVEL_CONFIG, LEVEL_3_GAME_LEVEL_CONFIG, LEVEL_5_GAME_LEVEL_CONFIG, MA_BACKGROUND_32, MA_BACKGROUND_64 } from "../util/Constants.js"
 
 export class GameScene extends Phaser.Scene {
 
@@ -17,7 +17,7 @@ export class GameScene extends Phaser.Scene {
 
     create() {
         
-        let gameLevel = new GameLevel(this, LEVEL_3_GAME_LEVEL_CONFIG)
+        let gameLevel = new GameLevel(this, LEVEL_5_GAME_LEVEL_CONFIG)
     }
 
 }
