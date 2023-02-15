@@ -9,12 +9,12 @@
 
 - [X] Spielfeld generieren / projezieren
 - [X] Routinen aus dem Spielfeld generieren und projezieren
+- [X] implement highlighting from hovering over an element
 - [ ] MemoryAddress Box repainten
 - [ ] Bewegung im Spielfeld einbauen
-  - [ ] Horizontale bzw. vertikale Linie einbauen
-  - [ ] Wechsel bei onClick
-  - [ ] Überprüfen, ob Feld bei onClick valid ist
-- [ ] Overflowmanager einbauen
+- [ ] Overflowmanager
+  - [X] Visuals
+  - [ ] logic
 - [ ] Details-Component createn
 - [ ] Timer-Component createn
 

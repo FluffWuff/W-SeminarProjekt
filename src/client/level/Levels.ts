@@ -1,15 +1,16 @@
 import { DISTANCE_MA_RO, GR_START_POS_X, GR_START_POS_Y, MA_HEIGHT, MA_START_POS_X, MA_START_POS_Y, MA_PRIMARY_COLOR, MA_WIDH, RO_HEIGHT, RO_WIDTH, DISTANCE_MA_OV_X, DISTANCE_MA_OV_Y, OV_COLOR, MA_SELECTED_COLOR, MA_HIDE_COLOR, MA_HIGHLIGHT_COLOR, MA_HIDE_SELECTED_COLOR } from "../util/Constants.js"
 import { Button } from "../util/Button.js"
 import { OverflowManager } from "./Overflow.js"
+import { RoutineField, GridField } from './MemoryAddressFields.js';
 
 type MemoryAddress = Button
 
 export class GameLevel implements ButtonListener {
 
     public currentTimer: number
-    public grid: MemoryAddress[][]
+    public grid: GridField[][]
 
-    public routines: MemoryAddress[][] = []
+    public routines: RoutineField[][] = []
 
     private currentOverflow = 0
     private overflow: OverflowManager
@@ -43,7 +44,7 @@ export class GameLevel implements ButtonListener {
             this.grid[i] = []
             for (var j = 0; j < this.levelConfig.columns; j++) {
                 this.grid[i][j] = this.createMemoryAddress(MA_WIDH * j * 1.025 + MA_START_POS_X * this.scene.cameras.main.centerX * 2,
-                    MA_HEIGHT * i * 1.025 + MA_START_POS_Y * this.scene.cameras.main.centerY * 2 + 25, false, j, i)
+                    MA_HEIGHT * i * 1.025 + MA_START_POS_Y * this.scene.cameras.main.centerY * 2 + 25, false, null, j, i) as GridField
             }
         }
     }
@@ -68,7 +69,7 @@ export class GameLevel implements ButtonListener {
                 let text = this.grid[lastV][lastH].text
                 this.routines[i][j] = this.createMemoryAddress(
                     RO_WIDTH * j * 1.025 + MA_WIDH * this.levelConfig.columns * 1.025 + MA_START_POS_X * this.scene.cameras.main.centerX * 2 + DISTANCE_MA_RO - 16,
-                    RO_HEIGHT * i * 1.025 + MA_START_POS_Y * this.scene.cameras.main.centerY * 2, true, -1, -1, text)
+                    RO_HEIGHT * i * 1.025 + MA_START_POS_Y * this.scene.cameras.main.centerY * 2, true, text, j) as RoutineField
                 if (isVer) {
                     let newV = Math.floor(this.levelConfig.rows * Math.random())
                     while (newV == lastV) newV = Math.floor(this.levelConfig.rows * Math.random())
@@ -125,7 +126,8 @@ export class GameLevel implements ButtonListener {
 
     onOver(button: Button) {
         //hides all fields not matching the same value in the grid - highlighting only fields who match
-        if (button.isSmall) {
+        //responsible for managing the highlighting if hoverd over a routine field
+        if (button instanceof RoutineField) {
             for (var i = 0; i < this.grid.length; i++) {
                 for (var j = 0; j < this.grid[i].length; j++) {
                     let gridElement = this.grid[i][j]
@@ -148,9 +150,11 @@ export class GameLevel implements ButtonListener {
             return;
         }
 
+        let gridField = <GridField> button
+        //responsible for 
         //adds highlighting effect - indicating next playLine
         if (!this.isPlayLineHorizontal) {
-            let rowFieldList = this.grid[button.gridPosY]
+            let rowFieldList = this.grid[gridField.gridPosY]
             for (var i = 0; i < rowFieldList.length; i++) {
                 let changeableButton = rowFieldList[i]
                 if (changeableButton.gridPosX != this.playLinePos[0]) {
@@ -160,7 +164,7 @@ export class GameLevel implements ButtonListener {
             }
         } else {
             for (var i = 0; i < this.grid.length; i++) {
-                let changeableButton = this.grid[i][button.gridPosX]
+                let changeableButton = this.grid[i][gridField.gridPosX]
                 if (changeableButton.gridPosY != this.playLinePos[0]) {
                     this.changeableElementList.push(changeableButton)
                     changeableButton.setTint(MA_HIGHLIGHT_COLOR)
@@ -170,6 +174,8 @@ export class GameLevel implements ButtonListener {
 
         //highlighting matching fields in the routine
         // TODO
+        // if hovered field is in playline && in routine front -> highlight (yellow) routine field
+
 
         //highlighting/indicating the current hoverd button/memoryadress - not original but makes it easier to play with
         button.setTint(MA_SELECTED_COLOR)
@@ -189,20 +195,17 @@ export class GameLevel implements ButtonListener {
         this.updatePlayLine(this.playLinePos[0])
     }
 
-    private createMemoryAddress(x: number, y: number, isSmall: boolean, gridPosX: number, gridPosY: number, text?: string): MemoryAddress {
+    private createMemoryAddress(x: number, y: number, isSmall: boolean, text?: string, gridPosX?: number, gridPosY?: number, routinePos?: number): MemoryAddress {
         if (text == null) {
             let number = Math.round(Math.random() * (8 - 2) + 2)
             let letters = ["A", "B", "C", "D", "E", "F", "X"] //REWORK - BALANCE
             let letter = letters[Math.floor(Math.random() * letters.length)]
             text = letter + number
         }
-        return new Button(this, x, y, text, isSmall, {
-            align: 'center',
-            font: '64px DS-DIGII',
-            //backgroundColor: MA_BACKGROUND_COLOR,
-
-        }, gridPosX, gridPosY)
+        if(isSmall) return new RoutineField(this, x, y, text, routinePos)
+        else return new GridField(this, x, y, text, gridPosX, gridPosY)
     }
+
 }
 
 export type GameLevelConfig = {

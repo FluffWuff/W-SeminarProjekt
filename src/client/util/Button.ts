@@ -3,8 +3,7 @@ import { MA_BACKGROUND_32, MA_BACKGROUND_64, MA_PRIMARY_COLOR, MA_SELECTED_COLOR
 
 export class Button extends Phaser.GameObjects.Group {
 
-
-    constructor(gameLevel: GameLevel, x: number, y: number, public text: string, public isSmall: boolean, style: object, public gridPosX: number, public gridPosY: number) {
+    constructor(gameLevel: GameLevel, x: number, y: number, public text: string, public isSmall: boolean) {
         super(gameLevel.scene);
         
         let key = MA_BACKGROUND_64
@@ -15,6 +14,10 @@ export class Button extends Phaser.GameObjects.Group {
             fontSize = 24
         }
 
+        let style = {       
+            align: 'center',
+            font: '64px DS-DIGII',
+        }
         let textElement = new Phaser.GameObjects.Text(gameLevel.scene, x, y, text, style)
         let imageElement = gameLevel.scene.make.image({
             x: x,
@@ -35,25 +38,19 @@ export class Button extends Phaser.GameObjects.Group {
         this.setTint(parseInt(MA_PRIMARY_COLOR.toString(16), 16));
         
         gameLevel.scene.add.existing(this);
+
         //pointerover, pointerdown, pointerout
         imageElement.setInteractive().on('pointerover', (pointer, localX, localY, event) => {
             gameLevel.onOver(this)
         })
+        imageElement.setInteractive().on('pointerdown', (pointer, localX, localY, event) => {
+            gameLevel.onDown(this)
+        })
         imageElement.setInteractive().on('pointerout', (pointer, localX, localY, event) => {
             gameLevel.onOut(this)
         })
-        //find onclick event:
-        //https://phaser.io/examples/v2/text/text-events
-        
-        //this.on('pointerdown', () => callback());
-        //textElement.on('pointerover', () => this.setTint(parseInt(MA_SELECTED_COLOR.toString(16), 16)), this)
-        //textElement.on('pointerout', () => this.setTint(parseInt(MA_PRIMARY_COLOR.toString(16), 16)), this);
-        //console.log("Button " + text + " wurde instanziert.");
-
     }
 
-
     destroy(fromScene?: boolean): void {}
-
 
 }
