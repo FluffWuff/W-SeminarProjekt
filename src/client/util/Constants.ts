@@ -9,6 +9,7 @@ export const brightGreenColor = 0xa5ff99
 export const yellowColor = 0xF1F22E
 export const darkYellowColr = 0x303003
 export const whiteColor = 0xFFFFFF
+export const redColor = 0xEC3F47
 
 //Selectionscene:
 export const SELECTION_TEXT_SIZE_PX = 16
@@ -47,6 +48,7 @@ export const RO_HEIGHT = 32
 export const DISTANCE_MA_OV_X = 150
 export const DISTANCE_MA_OV_Y = 250
 export const OV_COLOR = whiteColor
+export const OV_FILL_COLOR = redColor
 
 
 //Levelkonfigurationen:

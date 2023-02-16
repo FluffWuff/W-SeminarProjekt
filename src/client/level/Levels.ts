@@ -13,9 +13,7 @@ export class GameLevel implements ButtonListener {
 
     public routines: RoutineField[][] = []
 
-    private currentOverflow = 0
     private overflow: OverflowManager
-    private overflowText: Phaser.GameObjects.Text
 
     private changeableElementList: MemoryAddress[] = []
 
@@ -23,15 +21,26 @@ export class GameLevel implements ButtonListener {
     private playLinePos: [number, GridField[]] = [0, []]
     private legalGridField: GridField = null
 
+    private playableRoutines: RoutineField[] = []
+
     constructor(public scene: Phaser.Scene, private levelConfig: GameLevelConfig) {
         this.grid = []
 
         this.fillGridUp()
         this.createRoutines()
-        this.overflow = new OverflowManager(this.scene, this.levelConfig.maxOverflow)
+        this.overflow = new OverflowManager(this, this.levelConfig.maxOverflow)
         this.createTimer()
         this.createDetails()
         this.updatePlayLine(0)
+    }
+
+    public win() {
+
+    }
+
+    public loose() {
+        console.log("VERLOREN")
+        this.scene.scene.start("SinglePlayerScreen")
     }
 
     private fillGridUp() {
@@ -90,10 +99,6 @@ export class GameLevel implements ButtonListener {
             }
         }
 
-    }
-
-    private updateOverflow() {
-        this.overflowText.setText("overflow (" + this.currentOverflow + "/" + this.levelConfig.maxOverflow + ")")
     }
 
     private createTimer() {
@@ -185,9 +190,9 @@ export class GameLevel implements ButtonListener {
             var howMuchIsClickedDown = 0
             var startRoutineField = this.routines[i][0]
             do {
-                if(startRoutineField.isClickedDown) howMuchIsClickedDown++
+                if (startRoutineField.isClickedDown) howMuchIsClickedDown++
                 startRoutineField = startRoutineField.nextRoutineField
-            } while(startRoutineField.nextRoutineField != null)
+            } while (startRoutineField.nextRoutineField != null)
             for (var j = howMuchIsClickedDown; j < this.routines[i].length; j++) {
                 let currentRoutineField = this.routines[i][j]
                 if (gridField.text == currentRoutineField.text && !currentRoutineField.isClickedDown && j == howMuchIsClickedDown) {
@@ -199,6 +204,7 @@ export class GameLevel implements ButtonListener {
                     // - current routines pos
                     // - all current routine fields
                     this.legalGridField = gridField
+                    this.playableRoutines.push(currentRoutineField)
                 }
             }
         }
@@ -208,19 +214,30 @@ export class GameLevel implements ButtonListener {
     }
 
     onDown(button: Button) {
-        if(button instanceof RoutineField) return
-        let gridField = <GridField> button
+        if (button instanceof RoutineField) return
+        let gridField = <GridField>button
 
         //IF YES -> ILLEGAL move
-        if(this.legalGridField == null) {
+        if (this.legalGridField == null) {
             console.log("ILLEGAL MOVE!!!!")
-            return
+            //reset all non-completed routines
+            this.overflow.addElementToOverflow(gridField.text)
         }
         // IF YES -> LEGAL MOVE
-        if((this.legalGridField != null) || (gridField.gridPosX == this.legalGridField.gridPosX && gridField.gridPosY == this.legalGridField.gridPosY && gridField.text == this.legalGridField.text)) {
-           console.log("Legal Move!")
-
+        else if ((this.legalGridField != null) || (gridField.gridPosX == this.legalGridField.gridPosX && gridField.gridPosY == this.legalGridField.gridPosY && gridField.text == this.legalGridField.text)) {
+            console.log("Legal Move!")
+            //1. routine
+           //for(var i = 0; i < this.playableRoutines.length; i++) {
+           //    this.playableRoutines[i].setTint(MA_HIDE_COLOR)
+           //    //this.playableRoutines[i].isClickedDown = true
+           //}
         }
+        var newPos = 0
+        if (this.isPlayLineHorizontal) newPos = gridField.gridPosX
+        else newPos = gridField.gridPosY
+
+        this.isPlayLineHorizontal = !this.isPlayLineHorizontal
+        this.updatePlayLine(newPos)
         console.log(gridField.text)
     }
 
@@ -231,6 +248,7 @@ export class GameLevel implements ButtonListener {
             }
             this.changeableElementList = []
         }
+       
         this.legalGridField = null
         this.updatePlayLine(this.playLinePos[0])
     }

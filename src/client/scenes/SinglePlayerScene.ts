@@ -15,7 +15,7 @@ export class SinglePlayerScene extends Phaser.Scene {
     }
 
     create() {
-        //
+        let singlePlayerText = this.add.text(100, 100, "VERLOREN")
     }
 
 
