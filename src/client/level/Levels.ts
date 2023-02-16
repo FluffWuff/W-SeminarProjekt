@@ -19,7 +19,7 @@ export class GameLevel implements ButtonListener {
     private changeableElementList: MemoryAddress[] = []
 
     private isPlayLineHorizontal = true
-    private playLinePos: [number, MemoryAddress[]] = [0, []]
+    private playLinePos: [number, GridField[]] = [0, []]
 
 
     constructor(public scene: Phaser.Scene, private levelConfig: GameLevelConfig) {
@@ -65,11 +65,16 @@ export class GameLevel implements ButtonListener {
             let lastH = Math.floor(this.levelConfig.columns * Math.random())
             let lastV = Math.floor(this.levelConfig.rows * Math.random())
             //console.log("Creating new Routine with startH " + lastH + " and startV " + lastV)
+            var lastRoutineField: RoutineField = null
             for (var j = 0; j < Math.round(Math.random() * (this.levelConfig.maxRoutineLength - this.levelConfig.minRoutineLength) + this.levelConfig.minRoutineLength); j++) {
                 let text = this.grid[lastV][lastH].text
-                this.routines[i][j] = this.createMemoryAddress(
+                let currentRoutineField = this.createMemoryAddress(
                     RO_WIDTH * j * 1.025 + MA_WIDH * this.levelConfig.columns * 1.025 + MA_START_POS_X * this.scene.cameras.main.centerX * 2 + DISTANCE_MA_RO - 16,
                     RO_HEIGHT * i * 1.025 + MA_START_POS_Y * this.scene.cameras.main.centerY * 2, true, text, j) as RoutineField
+                if (lastRoutineField != null)
+                    lastRoutineField.nextRoutineField = currentRoutineField
+                lastRoutineField = currentRoutineField
+                this.routines[i][j] = currentRoutineField
                 if (isVer) {
                     let newV = Math.floor(this.levelConfig.rows * Math.random())
                     while (newV == lastV) newV = Math.floor(this.levelConfig.rows * Math.random())
@@ -131,15 +136,15 @@ export class GameLevel implements ButtonListener {
             for (var i = 0; i < this.grid.length; i++) {
                 for (var j = 0; j < this.grid[i].length; j++) {
                     let gridElement = this.grid[i][j]
-                    
+
                     if (button.text != gridElement.text) {
                         this.changeableElementList.push(gridElement)
                         gridElement.setTint(MA_HIDE_COLOR)
                     }
-                    if((!this.isPlayLineHorizontal && this.playLinePos[0] == gridElement.gridPosX) ||
-                     (this.isPlayLineHorizontal && this.playLinePos[0] == gridElement.gridPosY)) {
+                    if ((!this.isPlayLineHorizontal && this.playLinePos[0] == gridElement.gridPosX) ||
+                        (this.isPlayLineHorizontal && this.playLinePos[0] == gridElement.gridPosY)) {
                         //console.log(gridElement.text)
-                        if(button.text == gridElement.text) {
+                        if (button.text == gridElement.text) {
                             gridElement.setTint(MA_SELECTED_COLOR)
                         } else {
                             gridElement.setTint(MA_HIDE_SELECTED_COLOR)
@@ -150,7 +155,7 @@ export class GameLevel implements ButtonListener {
             return;
         }
 
-        let gridField = <GridField> button
+        let gridField = <GridField>button
         //responsible for 
         //adds highlighting effect - indicating next playLine
         if (!this.isPlayLineHorizontal) {
@@ -175,7 +180,21 @@ export class GameLevel implements ButtonListener {
         //highlighting matching fields in the routine
         // TODO
         // if hovered field is in playline && in routine front -> highlight (yellow) routine field
-
+        for (var i = 0; i < this.routines.length; i++) {
+            var howMuchIsClickedDown = 0
+            var startRoutineField = this.routines[i][0]
+            do {
+                if(startRoutineField.isClickedDown) howMuchIsClickedDown++
+                startRoutineField = startRoutineField.nextRoutineField
+            } while(startRoutineField.nextRoutineField != null)
+            for (var j = howMuchIsClickedDown; j < this.routines[i].length; j++) {
+                let currentRoutineField = this.routines[i][j]
+                if (gridField.text == currentRoutineField.text && !currentRoutineField.isClickedDown) {
+                    this.changeableElementList.push(currentRoutineField)
+                    currentRoutineField.setTint(MA_SELECTED_COLOR)
+                }
+            }
+        }
 
         //highlighting/indicating the current hoverd button/memoryadress - not original but makes it easier to play with
         button.setTint(MA_SELECTED_COLOR)
@@ -195,14 +214,14 @@ export class GameLevel implements ButtonListener {
         this.updatePlayLine(this.playLinePos[0])
     }
 
-    private createMemoryAddress(x: number, y: number, isSmall: boolean, text?: string, gridPosX?: number, gridPosY?: number, routinePos?: number): MemoryAddress {
+    private createMemoryAddress(x: number, y: number, isSmall: boolean, text?: string, gridPosX?: number, gridPosY?: number, routinePos?: number, nextRoutineField?: RoutineField): MemoryAddress {
         if (text == null) {
             let number = Math.round(Math.random() * (8 - 2) + 2)
             let letters = ["A", "B", "C", "D", "E", "F", "X"] //REWORK - BALANCE
             let letter = letters[Math.floor(Math.random() * letters.length)]
             text = letter + number
         }
-        if(isSmall) return new RoutineField(this, x, y, text, routinePos)
+        if (isSmall) return new RoutineField(this, x, y, text, routinePos)
         else return new GridField(this, x, y, text, gridPosX, gridPosY)
     }
 

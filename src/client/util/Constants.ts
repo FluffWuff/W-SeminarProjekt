@@ -85,7 +85,7 @@ export const LEVEL_5_GAME_LEVEL_CONFIG: GameLevelConfig = {
     rows: 7,
     columns: 8,
     maxTime: 180,
-    maxOverflow: 4,
+    maxOverflow: 5,
     minRoutines: 4, 
     maxRoutines: 6,
     minRoutineLength: 4,
