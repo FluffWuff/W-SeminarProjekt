@@ -12,6 +12,7 @@
 - [X] implement highlighting from hovering over an element
 - [ ] MemoryAddress Box repainten
 - [ ] Bewegung im Spielfeld einbauen
+- [ ] add specific and smaller memoryaddress values 
 - [ ] Overflowmanager
   - [X] Visuals
   - [ ] logic

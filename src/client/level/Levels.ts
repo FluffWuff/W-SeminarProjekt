@@ -2,6 +2,7 @@ import { DISTANCE_MA_RO, GR_START_POS_X, GR_START_POS_Y, MA_HEIGHT, MA_START_POS
 import { Button } from "../util/Button.js"
 import { OverflowManager } from "./Overflow.js"
 import { RoutineField, GridField } from './MemoryAddressFields.js';
+import { isJsxFragment } from "../../../node_modules/typescript/lib/typescript.js";
 
 type MemoryAddress = Button
 
@@ -20,7 +21,7 @@ export class GameLevel implements ButtonListener {
 
     private isPlayLineHorizontal = true
     private playLinePos: [number, GridField[]] = [0, []]
-
+    private legalGridField: GridField = null
 
     constructor(public scene: Phaser.Scene, private levelConfig: GameLevelConfig) {
         this.grid = []
@@ -189,9 +190,15 @@ export class GameLevel implements ButtonListener {
             } while(startRoutineField.nextRoutineField != null)
             for (var j = howMuchIsClickedDown; j < this.routines[i].length; j++) {
                 let currentRoutineField = this.routines[i][j]
-                if (gridField.text == currentRoutineField.text && !currentRoutineField.isClickedDown) {
+                if (gridField.text == currentRoutineField.text && !currentRoutineField.isClickedDown && j == howMuchIsClickedDown) {
                     this.changeableElementList.push(currentRoutineField)
                     currentRoutineField.setTint(MA_SELECTED_COLOR)
+
+                    //ADD more data for onDown() call
+                    // - all current routines
+                    // - current routines pos
+                    // - all current routine fields
+                    this.legalGridField = gridField
                 }
             }
         }
@@ -201,7 +208,20 @@ export class GameLevel implements ButtonListener {
     }
 
     onDown(button: Button) {
+        if(button instanceof RoutineField) return
+        let gridField = <GridField> button
 
+        //IF YES -> ILLEGAL move
+        if(this.legalGridField == null) {
+            console.log("ILLEGAL MOVE!!!!")
+            return
+        }
+        // IF YES -> LEGAL MOVE
+        if((this.legalGridField != null) || (gridField.gridPosX == this.legalGridField.gridPosX && gridField.gridPosY == this.legalGridField.gridPosY && gridField.text == this.legalGridField.text)) {
+           console.log("Legal Move!")
+
+        }
+        console.log(gridField.text)
     }
 
     onOut(button: Button) {
@@ -211,6 +231,7 @@ export class GameLevel implements ButtonListener {
             }
             this.changeableElementList = []
         }
+        this.legalGridField = null
         this.updatePlayLine(this.playLinePos[0])
     }
 
