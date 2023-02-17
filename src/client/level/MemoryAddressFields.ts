@@ -5,6 +5,7 @@ export class RoutineField extends Button {
 
     public isClickedDown = false
     public nextRoutineField: RoutineField = null
+    public routineLineNumber: number = null
 
     constructor(gameLevel: GameLevel, x: number, y: number, public text: string, public routinePos: number) {
         super(gameLevel, x, y, text, true)

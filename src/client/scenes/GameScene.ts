@@ -17,7 +17,7 @@ export class GameScene extends Phaser.Scene {
 
     create() {
         
-        let gameLevel = new GameLevel(this, LEVEL_5_GAME_LEVEL_CONFIG)
+        let gameLevel = new GameLevel(this, LEVEL_2_GAME_LEVEL_CONFIG)
     }
 
 }

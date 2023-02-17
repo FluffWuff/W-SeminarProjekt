@@ -22,7 +22,7 @@ export class GameLevel implements ButtonListener {
     private legalGridField: GridField = null
 
     private playableRoutines: RoutineField[] = []
-
+    private completedRoutines: RoutineField[][]
     constructor(public scene: Phaser.Scene, private levelConfig: GameLevelConfig) {
         this.grid = []
 
@@ -81,6 +81,9 @@ export class GameLevel implements ButtonListener {
                 let currentRoutineField = this.createMemoryAddress(
                     RO_WIDTH * j * 1.025 + MA_WIDH * this.levelConfig.columns * 1.025 + MA_START_POS_X * this.scene.cameras.main.centerX * 2 + DISTANCE_MA_RO - 16,
                     RO_HEIGHT * i * 1.025 + MA_START_POS_Y * this.scene.cameras.main.centerY * 2, true, text, j) as RoutineField
+
+                currentRoutineField.routineLineNumber = i
+
                 if (lastRoutineField != null)
                     lastRoutineField.nextRoutineField = currentRoutineField
                 lastRoutineField = currentRoutineField
@@ -227,10 +230,17 @@ export class GameLevel implements ButtonListener {
         else if ((this.legalGridField != null) || (gridField.gridPosX == this.legalGridField.gridPosX && gridField.gridPosY == this.legalGridField.gridPosY && gridField.text == this.legalGridField.text)) {
             console.log("Legal Move!")
             //1. routine
-           //for(var i = 0; i < this.playableRoutines.length; i++) {
-           //    this.playableRoutines[i].setTint(MA_HIDE_COLOR)
-           //    //this.playableRoutines[i].isClickedDown = true
-           //}
+            for (var i = 0; i < this.playableRoutines.length; i++) {
+                this.playableRoutines[i].setTint(MA_HIDE_COLOR)
+                this.playableRoutines[i].isClickedDown = true
+                this.changeableElementList.pop()
+                // this.changeableElementList[this.changeableElementList.indexOf(this.playableRoutines[i])] = null
+                if (this.playableRoutines[i].nextRoutineField == null) {
+                    this.completedRoutines[this.playableRoutines[i].routineLineNumber] = this.routines[this.playableRoutines[i].routineLineNumber]
+                    this.routines[this.playableRoutines[i].routineLineNumber] = [] 
+                }
+            }
+
         }
         var newPos = 0
         if (this.isPlayLineHorizontal) newPos = gridField.gridPosX
@@ -245,10 +255,14 @@ export class GameLevel implements ButtonListener {
         if (button.isSmall || this.changeableElementList.length != 0) {
             for (var i = 0; i < this.changeableElementList.length; i++) {
                 this.changeableElementList[i].setTint(MA_PRIMARY_COLOR)
+                if(button instanceof RoutineField) {
+                    let routineField = <RoutineField> button
+                    if(routineField.isClickedDown) routineField.setTint(MA_HIDE_COLOR)
+                }
             }
             this.changeableElementList = []
         }
-       
+
         this.legalGridField = null
         this.updatePlayLine(this.playLinePos[0])
     }
