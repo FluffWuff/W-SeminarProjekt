@@ -36,7 +36,7 @@ export class Button extends Phaser.GameObjects.Group {
         this.add(textElement, true)
         this.add(imageElement, true)
         this.setTint(parseInt(MA_PRIMARY_COLOR.toString(16), 16));
-        
+                
         gameLevel.scene.add.existing(this);
 
         //pointerover, pointerdown, pointerout
