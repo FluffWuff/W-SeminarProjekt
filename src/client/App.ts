@@ -4,7 +4,7 @@ import { SinglePlayerScene } from "./scenes/SinglePlayerScene.js"
 
 var config: Phaser.Types.Core.GameConfig = {
     width: 1920,
-    height: 900,
+    height: 1080,
     type: Phaser.AUTO,
     parent: 'game',
     antialias: false,

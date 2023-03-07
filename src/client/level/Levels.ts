@@ -35,7 +35,8 @@ export class GameLevel implements ButtonListener {
     }
 
     public win() {
-
+        let map = new Map()
+        
     }
 
     public loose() {
@@ -233,12 +234,14 @@ export class GameLevel implements ButtonListener {
             for (var i = 0; i < this.playableRoutines.length; i++) {
                 this.playableRoutines[i].setTint(MA_HIDE_COLOR)
                 this.playableRoutines[i].isClickedDown = true
+                console.log("Clickeddown successfully: " + this.playableRoutines[i].text)
                 this.changeableElementList.pop()
                 // this.changeableElementList[this.changeableElementList.indexOf(this.playableRoutines[i])] = null
-                if (this.playableRoutines[i].nextRoutineField == null) {
-                    this.completedRoutines[this.playableRoutines[i].routineLineNumber] = this.routines[this.playableRoutines[i].routineLineNumber]
-                    this.routines[this.playableRoutines[i].routineLineNumber] = [] 
-                }
+                // if (this.playableRoutines[i].nextRoutineField == null) {
+                //     this.completedRoutines[this.playableRoutines[i].routineLineNumber] = this.routines[this.playableRoutines[i].routineLineNumber]
+                //     this.routines[this.playableRoutines[i].routineLineNumber] = [] 
+                // }
+                
             }
 
         }
@@ -262,7 +265,7 @@ export class GameLevel implements ButtonListener {
             }
             this.changeableElementList = []
         }
-
+        this.playableRoutines = []
         this.legalGridField = null
         this.updatePlayLine(this.playLinePos[0])
     }
