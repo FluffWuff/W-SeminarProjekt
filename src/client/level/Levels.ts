@@ -220,12 +220,18 @@ export class GameLevel implements ButtonListener {
     onDown(button: Button) {
         if (button instanceof RoutineField) return
         let gridField = <GridField>button
-
+        console.log(this.playableRoutines)
         //IF YES -> ILLEGAL move
         if (this.legalGridField == null) {
             console.log("ILLEGAL MOVE!!!!")
             //reset all non-completed routines
             this.overflow.addElementToOverflow(gridField.text)
+            for(var i = 0; i < this.routines.length; i++) {
+                for(var j = 0; j < this.routines[i].length; j++) {
+                    this.routines[i][j].isClickedDown = false
+                    this.routines[i][j].setTint(MA_PRIMARY_COLOR)
+                }
+            }
         }
         // IF YES -> LEGAL MOVE
         else if ((this.legalGridField != null) || (gridField.gridPosX == this.legalGridField.gridPosX && gridField.gridPosY == this.legalGridField.gridPosY && gridField.text == this.legalGridField.text)) {
@@ -236,11 +242,13 @@ export class GameLevel implements ButtonListener {
                 this.playableRoutines[i].isClickedDown = true
                 console.log("Clickeddown successfully: " + this.playableRoutines[i].text)
                 this.changeableElementList.pop()
+                
                 // this.changeableElementList[this.changeableElementList.indexOf(this.playableRoutines[i])] = null
-                // if (this.playableRoutines[i].nextRoutineField == null) {
-                //     this.completedRoutines[this.playableRoutines[i].routineLineNumber] = this.routines[this.playableRoutines[i].routineLineNumber]
-                //     this.routines[this.playableRoutines[i].routineLineNumber] = [] 
-                // }
+                if (this.playableRoutines[i].nextRoutineField == null) {
+                    console.log("Routine fertig, routineLineNumber: " + this.playableRoutines[i].routineLineNumber)
+                    this.completedRoutines[this.playableRoutines[i].routineLineNumber] = this.routines[this.playableRoutines[i].routineLineNumber]
+                    this.routines[this.playableRoutines[i].routineLineNumber] = [] 
+                }
                 
             }
 
