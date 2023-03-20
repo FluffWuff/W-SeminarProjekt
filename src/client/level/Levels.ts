@@ -22,7 +22,7 @@ export class GameLevel implements ButtonListener {
     private legalGridField: GridField = null
 
     private playableRoutines: RoutineField[] = []
-    private completedRoutines: RoutineField[][]
+    private completedRoutines: RoutineField[][] = []
     constructor(public scene: Phaser.Scene, private levelConfig: GameLevelConfig) {
         this.grid = []
 
@@ -35,8 +35,8 @@ export class GameLevel implements ButtonListener {
     }
 
     public win() {
-        let map = new Map()
-        
+        this.scene.scene.start("SinglePlayerScreen")
+
     }
 
     public loose() {
@@ -226,10 +226,14 @@ export class GameLevel implements ButtonListener {
             console.log("ILLEGAL MOVE!!!!")
             //reset all non-completed routines
             this.overflow.addElementToOverflow(gridField.text)
-            for(var i = 0; i < this.routines.length; i++) {
-                for(var j = 0; j < this.routines[i].length; j++) {
+            for (var i = 0; i < this.routines.length; i++) {
+                for (var j = 0; j < this.routines[i].length; j++) {
+                    if (typeof this.completedRoutines[i] != undefined) continue
+                    console.log(this.completedRoutines[i])
+
                     this.routines[i][j].isClickedDown = false
                     this.routines[i][j].setTint(MA_PRIMARY_COLOR)
+
                 }
             }
         }
@@ -242,14 +246,19 @@ export class GameLevel implements ButtonListener {
                 this.playableRoutines[i].isClickedDown = true
                 console.log("Clickeddown successfully: " + this.playableRoutines[i].text)
                 this.changeableElementList.pop()
-                
+
                 // this.changeableElementList[this.changeableElementList.indexOf(this.playableRoutines[i])] = null
+                //console.log(this.playableRoutines[i].nextRoutineField)
                 if (this.playableRoutines[i].nextRoutineField == null) {
                     console.log("Routine fertig, routineLineNumber: " + this.playableRoutines[i].routineLineNumber)
                     this.completedRoutines[this.playableRoutines[i].routineLineNumber] = this.routines[this.playableRoutines[i].routineLineNumber]
-                    this.routines[this.playableRoutines[i].routineLineNumber] = [] 
+                    //this.routines[this.playableRoutines[i].routineLineNumber] = [] 
+
+                    if (this.completedRoutines.length == this.routines.length) {
+                        this.win()
+                    }
                 }
-                
+
             }
 
         }
@@ -266,9 +275,9 @@ export class GameLevel implements ButtonListener {
         if (button.isSmall || this.changeableElementList.length != 0) {
             for (var i = 0; i < this.changeableElementList.length; i++) {
                 this.changeableElementList[i].setTint(MA_PRIMARY_COLOR)
-                if(button instanceof RoutineField) {
-                    let routineField = <RoutineField> button
-                    if(routineField.isClickedDown) routineField.setTint(MA_HIDE_COLOR)
+                if (button instanceof RoutineField) {
+                    let routineField = <RoutineField>button
+                    if (routineField.isClickedDown) routineField.setTint(MA_HIDE_COLOR)
                 }
             }
             this.changeableElementList = []
