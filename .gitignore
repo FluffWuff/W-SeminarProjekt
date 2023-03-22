@@ -2,3 +2,4 @@ node_modules/
 Code.code-workspace
 .vscode/
 htdocs/js/
+htdocs/lib/
