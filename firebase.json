@@ -1,16 +1,10 @@
 {
   "hosting": {
-    "public": " htdocs",
+    "public": "htdocs",
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
-    ],
-    "rewrites": [
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
     ]
   }
 }
