@@ -12,6 +12,7 @@ jobs:
       - uses: actions/setup-node@main
       - run: npm install
       - run: tsc --b
+      - run: firebase experiments:enable webframeworks
       - uses: w9jds/firebase-action@master
         with:
           args: deploy --only hosting
