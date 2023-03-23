@@ -1,0 +1,25 @@
+* {
+    background-color: black;
+    cursor: url('../assets/cursor32.png') 16 16, auto;
+
+}
+/*
+@font-face {
+    font-family: DS-DIGI;
+    src: url('assets/fonts/DS-DIGI.TTF');
+}
+
+@font-face {
+    font-family: DS-DIGIB;
+    src: url('assets/fonts/DS-DIGIB.TTF');
+}
+
+@font-face {
+    font-family: DS-DIGIT;
+    src: url('assets/fonts/DS-DIGIT.TTF');
+}
+*/
+@font-face {
+    font-family: DS-DIGII;
+    src: url('../assets/fonts/DS-DIGII.TTF');
+}
