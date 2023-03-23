@@ -1,8 +1,7 @@
-import { DISTANCE_MA_RO, GR_START_POS_X, GR_START_POS_Y, MA_HEIGHT, MA_START_POS_X, MA_START_POS_Y, MA_PRIMARY_COLOR, MA_WIDH, RO_HEIGHT, RO_WIDTH, DISTANCE_MA_OV_X, DISTANCE_MA_OV_Y, OV_COLOR, MA_SELECTED_COLOR, MA_HIDE_COLOR, MA_HIGHLIGHT_COLOR, MA_HIDE_SELECTED_COLOR } from "../util/Constants.js"
+import { DISTANCE_MA_RO, GR_START_POS_X, GR_START_POS_Y, MA_HEIGHT, MA_START_POS_X, MA_START_POS_Y, MA_PRIMARY_COLOR, MA_WIDH, RO_HEIGHT, RO_WIDTH, DISTANCE_MA_OV_X, DISTANCE_MA_OV_Y, OV_COLOR, MA_SELECTED_COLOR, MA_HIDE_COLOR, MA_HIGHLIGHT_COLOR, MA_HIDE_SELECTED_COLOR, GameLevelConfig } from "../util/Constants.js"
 import { Button } from "../util/Button.js"
 import { OverflowManager } from "./Overflow.js"
 import { RoutineField, GridField } from './MemoryAddressFields.js';
-import { isJsxFragment } from "../../../node_modules/typescript/lib/typescript.js";
 
 type MemoryAddress = Button
 
@@ -300,16 +299,7 @@ export class GameLevel implements ButtonListener {
 
 }
 
-export type GameLevelConfig = {
-    rows: number,
-    columns: number,
-    maxTime: number,
-    maxOverflow: number,
-    minRoutines: number,
-    maxRoutines: number,
-    minRoutineLength: number,
-    maxRoutineLength: number
-}
+
 
 interface ButtonListener {
 

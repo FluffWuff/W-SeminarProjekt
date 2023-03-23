@@ -1,6 +1,3 @@
-import { GameLevelConfig } from "../level/Levels.js"
-
-
 //Color plate:
 export const greenPrimaryColor = 0x82f676
 export const greenSecondaryColor = 0x102210
@@ -50,8 +47,29 @@ export const DISTANCE_MA_OV_Y = 250
 export const OV_COLOR = whiteColor
 export const OV_FILL_COLOR = redColor
 
+export type GameLevelConfig = {
+    rows: number,
+    columns: number,
+    maxTime: number,
+    maxOverflow: number,
+    minRoutines: number,
+    maxRoutines: number,
+    minRoutineLength: number,
+    maxRoutineLength: number
+}
+
 
 //Levelkonfigurationen:
+export const LEVEL_1_GAME_LEVEL_CONFIG: GameLevelConfig = {
+    rows: 2,
+    columns: 3,
+    maxTime: 120,
+    maxOverflow: 5,
+    minRoutines: 1, 
+    maxRoutines: 2,
+    minRoutineLength: 2,
+    maxRoutineLength: 2
+}
 export const LEVEL_2_GAME_LEVEL_CONFIG: GameLevelConfig = {
     rows: 3,
     columns: 4,
@@ -72,15 +90,15 @@ export const LEVEL_3_GAME_LEVEL_CONFIG: GameLevelConfig = {
     minRoutineLength: 2,
     maxRoutineLength: 4
 }
-//REWORK:
+
 export const LEVEL_4_GAME_LEVEL_CONFIG: GameLevelConfig = {
     rows: 5,
-    columns: 4,
+    columns: 6,
     maxTime: 120,
     maxOverflow: 4,
     minRoutines: 3, 
     maxRoutines: 4,
-    minRoutineLength: 2,
+    minRoutineLength: 3,
     maxRoutineLength: 5
 }
 export const LEVEL_5_GAME_LEVEL_CONFIG: GameLevelConfig = {

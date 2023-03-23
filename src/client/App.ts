@@ -1,5 +1,5 @@
 import { GameScene } from "./scenes/GameScene.js"
-import { SelectioScene } from "./scenes/SelectionScene.js"
+import { SelectionScene } from "./scenes/SelectionScene.js"
 import { SinglePlayerScene } from "./scenes/SinglePlayerScene.js"
 
 var config: Phaser.Types.Core.GameConfig = {
@@ -9,9 +9,9 @@ var config: Phaser.Types.Core.GameConfig = {
     parent: 'game',
     antialias: false,
     scene: [
+        new SelectionScene(),
         new GameScene(),
-        new SelectioScene(),
-        new SinglePlayerScene()
+        new SinglePlayerScene(),
     ],
     physics: {
         default: "arcade",
