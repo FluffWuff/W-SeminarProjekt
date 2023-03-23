@@ -1,4 +1,4 @@
-## [Link to the game](https://w-seminar-7bb66.web.app)
+## [Link to the game](https://w-seminar-7bb66.firebaseapp.com/)
  ---
 ## Still ToDo:
 - [ ] Add selectUI

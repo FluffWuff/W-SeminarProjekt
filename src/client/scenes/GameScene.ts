@@ -16,7 +16,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     create() {
-        this.scene.scene.add.text(0, 0, "Version: 0.2.1")
+        this.scene.scene.add.text(0, 0, "Version: 0.2.2")
         let gameLevel = new GameLevel(this, LEVEL_2_GAME_LEVEL_CONFIG)
     }
 
