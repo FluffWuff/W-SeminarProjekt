@@ -47,10 +47,11 @@ export class OverflowManager extends Phaser.GameObjects.Group {
 
     public addElementToOverflow(text: string) {
         this.currentOverflow++
-        if(this.currentOverflow > this.maxOverflow) {
+        if(this.currentOverflow > this.maxOverflow) { //Maximale Anzahl überschritten -> Spieler verliert
             this.gameLevel.loose()
             return
         }
+        //Updating Overflow
         this.textElement.setText("overflow ("+this.currentOverflow+"/"+this.maxOverflow+")")
         this.overflowList[this.currentOverflow-1][0].setTint(OV_FILL_COLOR)
         this.overflowList[this.currentOverflow-1][1].setText(text).setTint(OV_FILL_COLOR)

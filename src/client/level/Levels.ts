@@ -165,8 +165,8 @@ export class GameLevel implements ButtonListener {
         }
 
         let gridField = <GridField>button
-        //responsible for 
-        //adds highlighting effect - indicating next playLine
+        //responsible for indicating next playLine
+        //adds highlighting effect
         if (!this.isPlayLineHorizontal) {
             let rowFieldList = this.grid[gridField.gridPosY]
             for (var i = 0; i < rowFieldList.length; i++) {
@@ -187,29 +187,31 @@ export class GameLevel implements ButtonListener {
         }
 
         //highlighting matching fields in the routine
-        // TODO
         // if hovered field is in playline && in routine front -> highlight (yellow) routine field
         for (var i = 0; i < this.routines.length; i++) {
             var howMuchIsClickedDown = 0
             var startRoutineField = this.routines[i][0]
+            //Springe zum aktuellsten Feld der Routine und zähle die gedrückten Felder:
             do {
                 if (startRoutineField.isClickedDown) howMuchIsClickedDown++
                 startRoutineField = startRoutineField.nextRoutineField
             } while (startRoutineField.nextRoutineField != null)
-            for (var j = howMuchIsClickedDown; j < this.routines[i].length; j++) {
-                let currentRoutineField = this.routines[i][j]
-                if (gridField.text == currentRoutineField.text && !currentRoutineField.isClickedDown && j == howMuchIsClickedDown) {
-                    this.changeableElementList.push(currentRoutineField)
-                    currentRoutineField.setTint(MA_SELECTED_COLOR)
 
-                    //ADD more data for onDown() call
-                    // - all current routines
-                    // - current routines pos
-                    // - all current routine fields
-                    this.legalGridField = gridField
-                    this.playableRoutines.push(currentRoutineField)
-                }
+            let nextRoutineField = this.routines[i][howMuchIsClickedDown]
+
+            //Checke ob der Wert des Spielfelds == Wert des aktuellen Routinefelds ist
+            if (gridField.text == nextRoutineField.text) {
+                this.changeableElementList.push(nextRoutineField)
+                nextRoutineField.setTint(MA_SELECTED_COLOR)
+
+                //ADD more data for onDown() call
+                // - all current routines
+                // - current routines pos
+                // - all current routine fields
+                this.legalGridField = gridField
+                this.playableRoutines.push(nextRoutineField)
             }
+
         }
 
         //highlighting/indicating the current hoverd button/memoryadress - not original but makes it easier to play with
@@ -224,11 +226,12 @@ export class GameLevel implements ButtonListener {
         if (this.legalGridField == null) {
             console.log("ILLEGAL MOVE!!!!")
             //reset all non-completed routines
-            this.overflow.addElementToOverflow(gridField.text)
+            this.overflow.addElementToOverflow(gridField.text) //Erhöhe overflow um 1 mit dem Element, welches gedrückt wurde
+
             for (var i = 0; i < this.routines.length; i++) {
                 for (var j = 0; j < this.routines[i].length; j++) {
-                    if (typeof this.completedRoutines[i] != undefined) continue
-                    console.log(this.completedRoutines[i])
+                    
+                    console.log( this.routines[i][j])
 
                     this.routines[i][j].isClickedDown = false
                     this.routines[i][j].setTint(MA_PRIMARY_COLOR)
@@ -237,7 +240,8 @@ export class GameLevel implements ButtonListener {
             }
         }
         // IF YES -> LEGAL MOVE
-        else if ((this.legalGridField != null) || (gridField.gridPosX == this.legalGridField.gridPosX && gridField.gridPosY == this.legalGridField.gridPosY && gridField.text == this.legalGridField.text)) {
+        else if ((this.legalGridField != null) ||
+            (gridField.gridPosX == this.legalGridField.gridPosX && gridField.gridPosY == this.legalGridField.gridPosY && gridField.text == this.legalGridField.text)) {
             console.log("Legal Move!")
             //1. routine
             for (var i = 0; i < this.playableRoutines.length; i++) {
@@ -250,6 +254,13 @@ export class GameLevel implements ButtonListener {
                 //console.log(this.playableRoutines[i].nextRoutineField)
                 if (this.playableRoutines[i].nextRoutineField == null) {
                     console.log("Routine fertig, routineLineNumber: " + this.playableRoutines[i].routineLineNumber)
+
+                    //Delete Routine from list:
+                    let completedRoutine = this.routines[this.playableRoutines[i].routineLineNumber]
+                    for(let i = 0; i < completedRoutine.length; i++) {
+                        completedRoutine[i].destroy()
+                    }
+
                     this.completedRoutines[this.playableRoutines[i].routineLineNumber] = this.routines[this.playableRoutines[i].routineLineNumber]
                     //this.routines[this.playableRoutines[i].routineLineNumber] = [] 
 
@@ -273,6 +284,7 @@ export class GameLevel implements ButtonListener {
     onOut(button: Button) {
         if (button.isSmall || this.changeableElementList.length != 0) {
             for (var i = 0; i < this.changeableElementList.length; i++) {
+                if(this.changeableElementList[i] == undefined) continue
                 this.changeableElementList[i].setTint(MA_PRIMARY_COLOR)
                 if (button instanceof RoutineField) {
                     let routineField = <RoutineField>button

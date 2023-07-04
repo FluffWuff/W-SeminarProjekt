@@ -11,6 +11,10 @@ export class RoutineField extends Button {
         super(gameLevel, x, y, text, true)
     }
 
+    destroy() {
+        super.destroy()
+    }
+
 }
 
 export class GridField extends Button {
