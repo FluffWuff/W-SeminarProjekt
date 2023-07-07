@@ -243,26 +243,39 @@ export class GameLevel implements ButtonListener {
         else if ((this.legalGridField != null) ||
             (gridField.gridPosX == this.legalGridField.gridPosX && gridField.gridPosY == this.legalGridField.gridPosY && gridField.text == this.legalGridField.text)) {
             console.log("Legal Move!")
+            console.log("Playable routines: " + this.playableRoutines)
             //1. routine
             for (var i = 0; i < this.playableRoutines.length; i++) {
-                this.playableRoutines[i].setTint(MA_HIDE_COLOR)
-                this.playableRoutines[i].isClickedDown = true
-                console.log("Clickeddown successfully: " + this.playableRoutines[i].text)
+                let playableRoutine = this.playableRoutines[i]
+                playableRoutine.setTint(MA_HIDE_COLOR)
+                playableRoutine.isClickedDown = true
+                console.log("Clickeddown successfully: " + playableRoutine.text)
                 this.changeableElementList.pop()
 
-                // this.changeableElementList[this.changeableElementList.indexOf(this.playableRoutines[i])] = null
-                //console.log(this.playableRoutines[i].nextRoutineField)
-                if (this.playableRoutines[i].nextRoutineField == null) {
-                    console.log("Routine fertig, routineLineNumber: " + this.playableRoutines[i].routineLineNumber)
+
+                //TODO FIX THIS 
+                // for (var i = 0; i < this.routines.length; i++) {
+                //     if(playableRoutine.routineLineNumber == i) continue
+                //     for (var j = 0; j < this.routines[i].length; j++) {
+                //         console.log( this.routines[i][j])
+                //         this.routines[i][j].isClickedDown = false
+                //         this.routines[i][j].setTint(MA_PRIMARY_COLOR)
+                //     }
+                // }
+
+                // this.changeableElementList[this.changeableElementList.indexOf(playableRoutine)] = null
+                //console.log(playableRoutine.nextRoutineField)
+                if (playableRoutine.nextRoutineField == null) {
+                    console.log("Routine fertig, routineLineNumber: " + playableRoutine.routineLineNumber)
 
                     //Delete Routine from list:
-                    let completedRoutine = this.routines[this.playableRoutines[i].routineLineNumber]
+                    let completedRoutine = this.routines[playableRoutine.routineLineNumber]
                     for(let i = 0; i < completedRoutine.length; i++) {
                         completedRoutine[i].destroy()
                     }
 
-                    this.completedRoutines[this.playableRoutines[i].routineLineNumber] = this.routines[this.playableRoutines[i].routineLineNumber]
-                    //this.routines[this.playableRoutines[i].routineLineNumber] = [] 
+                    this.completedRoutines[playableRoutine.routineLineNumber] = this.routines[playableRoutine.routineLineNumber]
+                    //this.routines[playableRoutine.routineLineNumber] = [] 
 
                     if (this.completedRoutines.length == this.routines.length) {
                         this.win()
