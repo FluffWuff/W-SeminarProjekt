@@ -1,3 +1,4 @@
+import { GameDefaultShaderPipeline } from "../shader/GameShaderPipeline.js";
 import { GameLevelConfig, LEVEL_1_GAME_LEVEL_CONFIG, LEVEL_2_GAME_LEVEL_CONFIG, LEVEL_3_GAME_LEVEL_CONFIG, LEVEL_4_GAME_LEVEL_CONFIG, LEVEL_5_GAME_LEVEL_CONFIG, MA_HIDE_COLOR, MA_HIDE_SELECTED_COLOR, MA_PRIMARY_COLOR, MA_SELECTED_COLOR } from "../util/Constants.js"
 import { GrayScalePipeline } from "./Grayscale.js"
 
@@ -13,14 +14,8 @@ export class SelectionScene extends Phaser.Scene {
 
     }
 
-    preload() {
-        this.load.glsl('matrixshader', 'assets/shader/shader.frag')
-    }
-
     create() {
-        // this.add.shader('matrixshader', 100, 100)
-        let renderer = <Phaser.Renderer.WebGL.WebGLRenderer>this.renderer;
-        // renderer.pipelines.add('Custom', new GrayScalePipeline(this.game));
+        this.cameras.main.setPostPipeline(GameDefaultShaderPipeline);
         
         
         let level1Box = new SelectionButton(this, 1920 / 2, 200, "Level 1", LEVEL_1_GAME_LEVEL_CONFIG)
@@ -29,7 +24,6 @@ export class SelectionScene extends Phaser.Scene {
         let level4Box = new SelectionButton(this, 1920 / 2, 500, "Level 4", LEVEL_4_GAME_LEVEL_CONFIG)
         let level5Box = new SelectionButton(this, 1920 / 2, 600, "Level 5", LEVEL_5_GAME_LEVEL_CONFIG)
         
-        this.cameras.main.setPipeline(renderer.pipelines.get('Test'));
     }
 
 }

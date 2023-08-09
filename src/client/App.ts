@@ -1,7 +1,7 @@
 import { GameScene } from "./scenes/GameScene.js"
-import { GrayScalePipeline } from "./scenes/Grayscale.js"
 import { SelectionScene } from "./scenes/SelectionScene.js"
 import { SinglePlayerScene } from "./scenes/SinglePlayerScene.js"
+import { GameDefaultShaderPipeline } from "./shader/GameShaderPipeline.js"
 
 var config: Phaser.Types.Core.GameConfig = {
     width: 1920,
@@ -25,7 +25,7 @@ var config: Phaser.Types.Core.GameConfig = {
     },
     pipeline: {
         //@ts-ignore#
-        'Test': GrayScalePipeline
+        'GameDefaultShaderPipeline': GameDefaultShaderPipeline
     }
 }
 
