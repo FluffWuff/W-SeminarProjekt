@@ -1,19 +1,18 @@
 const fragShader = `
+#define SHADER_NAME HUE_ROTATE_FS
 precision mediump float;
 uniform sampler2D uMainSampler;
 varying vec2 outTexCoord;
 void main() {
     vec3 color = vec3(0.0, 0.0, 0.0);
     
-    float gx = sin(outTexCoord.x);
-    float gy = cos(outTexCoord.y);
-    if(gx<-0.408) gx = 0.0;
-    color = vec3(0, 1.-gy-gx, 0);;
-
-    if(gx == 0.0) {
+    float gx = sin(outTexCoord.x*1920.);
+    float gy = cos(outTexCoord.y*1080.);
+    if(gx<0.967) { 
         gl_FragColor = texture2D(uMainSampler, outTexCoord);
     } else {
-        gl_FragColor = vec4(color, 1.0);
+        color = vec3(0, 0.6-gy-gx, 0.12);;
+        gl_FragColor = vec4(color, .2);
     }
 }
 `;
