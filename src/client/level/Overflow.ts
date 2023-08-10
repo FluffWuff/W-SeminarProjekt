@@ -48,6 +48,7 @@ export class OverflowManager extends Phaser.GameObjects.Group {
     public addElementToOverflow(text: string) {
         this.currentOverflow++
         if(this.currentOverflow > this.maxOverflow) { //Maximale Anzahl überschritten -> Spieler verliert
+            console.log("LOOSE!")
             this.gameLevel.loose()
             return
         }

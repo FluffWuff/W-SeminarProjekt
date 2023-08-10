@@ -21,7 +21,7 @@ export class GameLevel implements ButtonListener {
     private legalGridField: GridField = null
 
     private playableRoutines: RoutineField[] = []
-    private completedRoutines: RoutineField[][] = []
+    private completedRoutines: number = 0
     constructor(public scene: Phaser.Scene, private levelConfig: GameLevelConfig) {
         this.grid = []
 
@@ -202,7 +202,8 @@ export class GameLevel implements ButtonListener {
             //Checke ob der Wert des Spielfelds == Wert des aktuellen Routinefelds ist
             if (gridField.text == nextRoutineField.text) {
                 this.changeableElementList.push(nextRoutineField)
-                nextRoutineField.setTint(MA_SELECTED_COLOR)
+                
+                nextRoutineField.setTint(MA_SELECTED_COLOR) // after routine is completed, this line can produce a lot of errors
 
                 //ADD more data for onDown() call
                 // - all current routines
@@ -234,7 +235,7 @@ export class GameLevel implements ButtonListener {
                     console.log( this.routines[i][j])
 
                     this.routines[i][j].isClickedDown = false
-                    this.routines[i][j].setTint(MA_PRIMARY_COLOR)
+                    if(this.routines[i][j] == undefined) this.routines[i][j].setTint(MA_PRIMARY_COLOR)
 
                 }
             }
@@ -243,7 +244,8 @@ export class GameLevel implements ButtonListener {
         else if ((this.legalGridField != null) ||
             (gridField.gridPosX == this.legalGridField.gridPosX && gridField.gridPosY == this.legalGridField.gridPosY && gridField.text == this.legalGridField.text)) {
             console.log("Legal Move!")
-            console.log("Playable routines: " + this.playableRoutines)
+            console.log("Playable routines: ")
+            this.playableRoutines.forEach((it) => console.log(it))
             //1. routine
             for (var i = 0; i < this.playableRoutines.length; i++) {
                 let playableRoutine = this.playableRoutines[i]
@@ -274,10 +276,11 @@ export class GameLevel implements ButtonListener {
                         completedRoutine[i].destroy()
                     }
 
-                    this.completedRoutines[playableRoutine.routineLineNumber] = this.routines[playableRoutine.routineLineNumber]
+                    this.completedRoutines++
                     //this.routines[playableRoutine.routineLineNumber] = [] 
 
-                    if (this.completedRoutines.length == this.routines.length) {
+                    if (this.completedRoutines == this.routines.length) {
+                        console.log("WIN!")
                         this.win()
                     }
                 }
@@ -295,14 +298,17 @@ export class GameLevel implements ButtonListener {
     }
 
     onOut(button: Button) {
+        console.log(button.text)
         if (button.isSmall || this.changeableElementList.length != 0) {
+            console.log(this.changeableElementList.length)
             for (var i = 0; i < this.changeableElementList.length; i++) {
-                if(this.changeableElementList[i] == undefined) continue
-                this.changeableElementList[i].setTint(MA_PRIMARY_COLOR)
-                if (button instanceof RoutineField) {
-                    let routineField = <RoutineField>button
-                    if (routineField.isClickedDown) routineField.setTint(MA_HIDE_COLOR)
-                }
+                let elementToChange = this.changeableElementList[i]
+
+                if(elementToChange != undefined) elementToChange.setTint(MA_PRIMARY_COLOR)
+            }
+            if (button instanceof RoutineField) {
+                let routineField = <RoutineField>button
+                if (routineField.isClickedDown) routineField.setTint(MA_HIDE_COLOR)
             }
             this.changeableElementList = []
         }

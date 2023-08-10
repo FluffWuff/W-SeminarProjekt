@@ -1,5 +1,4 @@
 import { GameScene } from "./scenes/GameScene.js"
-import { GrayScalePipeline } from "./scenes/Grayscale.js"
 import { SelectionScene } from "./scenes/SelectionScene.js"
 import { SinglePlayerScene } from "./scenes/SinglePlayerScene.js"
 
@@ -22,10 +21,6 @@ var config: Phaser.Types.Core.GameConfig = {
     },
     input: {
         gamepad: true
-    },
-    pipeline: {
-        //@ts-ignore#
-        'Test': GrayScalePipeline
     }
 }
 
