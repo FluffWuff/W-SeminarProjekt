@@ -203,7 +203,7 @@ export class GameLevel implements ButtonListener {
             if (gridField.text == nextRoutineField.text) {
                 this.changeableElementList.push(nextRoutineField)
                 
-                nextRoutineField.setTint(MA_SELECTED_COLOR) // after routine is completed, this line can produce a lot of errors
+                if(typeof nextRoutineField !== 'undefined') nextRoutineField.setTint(MA_SELECTED_COLOR) // after routine is completed, this line can produce a lot of errors
 
                 //ADD more data for onDown() call
                 // - all current routines
@@ -273,6 +273,11 @@ export class GameLevel implements ButtonListener {
                     //Delete Routine from list:
                     let completedRoutine = this.routines[playableRoutine.routineLineNumber]
                     for(let i = 0; i < completedRoutine.length; i++) {
+                        let completedRoutineField = this.completedRoutines[i]
+                        let changeableElementListIndex = this.changeableElementList.indexOf(completedRoutineField)
+                        if(changeableElementListIndex != -1) { //Routinefield ist zum ändern gequeued
+                            this.changeableElementList.splice(changeableElementListIndex, 1)
+                        }
                         completedRoutine[i].destroy()
                     }
 
@@ -298,13 +303,12 @@ export class GameLevel implements ButtonListener {
     }
 
     onOut(button: Button) {
-        console.log(button.text)
-        if (button.isSmall || this.changeableElementList.length != 0) {
-            console.log(this.changeableElementList.length)
+        if (this.changeableElementList.length != 0) {            
+            console.log(button.text + " " + this.changeableElementList.length)
             for (var i = 0; i < this.changeableElementList.length; i++) {
                 let elementToChange = this.changeableElementList[i]
-
-                if(elementToChange != undefined) elementToChange.setTint(MA_PRIMARY_COLOR)
+                console.log(i + " " + elementToChange.isSmall)
+                if(!elementToChange.isSmall) elementToChange.setTint(MA_PRIMARY_COLOR)
             }
             if (button instanceof RoutineField) {
                 let routineField = <RoutineField>button
