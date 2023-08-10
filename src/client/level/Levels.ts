@@ -203,7 +203,7 @@ export class GameLevel implements ButtonListener {
             if (gridField.text == nextRoutineField.text) {
                 this.changeableElementList.push(nextRoutineField)
 
-                if (typeof nextRoutineField !== 'undefined') nextRoutineField.setTint(MA_SELECTED_COLOR) // after routine is completed, this line can produce a lot of errors
+                if(!nextRoutineField.isDestroyed) nextRoutineField.setTint(MA_SELECTED_COLOR) // after routine is completed, this line can produce a lot of errors
 
                 //ADD more data for onDown() call
                 // - all current routines
@@ -231,11 +231,11 @@ export class GameLevel implements ButtonListener {
 
             for (var i = 0; i < this.routines.length; i++) {
                 for (var j = 0; j < this.routines[i].length; j++) {
-
+                    if(this.routines[i][j].isDestroyed) continue
                     console.log(this.routines[i][j])
 
                     this.routines[i][j].isClickedDown = false
-                    if (this.routines[i][j] == undefined) this.routines[i][j].setTint(MA_PRIMARY_COLOR)
+                    this.routines[i][j].setTint(MA_PRIMARY_COLOR)
 
                 }
             }
@@ -247,23 +247,23 @@ export class GameLevel implements ButtonListener {
             console.log("Playable routines: ")
             this.playableRoutines.forEach((it) => console.log(it))
 
-            for (var i = 0; i < this.routines.length; i++) {
-                for(var k = 0; k < this.playableRoutines.length; k++) {
-                    let isPlayable = false
-                    if(i != this.playableRoutines[k].routineLineNumber) {
+            let toBeCleared = this.routines.filter(routine => {
+                const routineIndices = routine.map(field => field.routineLineNumber)
+                return this.playableRoutines.every(pR => !routineIndices.includes(pR.routineLineNumber))
+            }) 
+            console.log(toBeCleared.length)
+            for (var i = 0; i < toBeCleared.length; i++) {
+                for (var j = 0; j < toBeCleared[i].length; j++) {
+                    if(toBeCleared[i][j].isDestroyed) continue
 
-                    }
-                }
-                for (var j = 0; j < this.routines[i].length; j++) {
+                    console.log(toBeCleared[i][j])
 
-                    console.log(this.routines[i][j])
-
-                    this.routines[i][j].isClickedDown = false
-                    if (this.routines[i][j] == undefined) this.routines[i][j].setTint(MA_PRIMARY_COLOR)
+                    toBeCleared[i][j].isClickedDown = false
+                    toBeCleared[i][j].setTint(MA_PRIMARY_COLOR)
 
                 }
             }
-
+            
             //1. routine
             for (var i = 0; i < this.playableRoutines.length; i++) {
                 let playableRoutine = this.playableRoutines[i]
@@ -299,10 +299,18 @@ export class GameLevel implements ButtonListener {
                         completedRoutine[i].destroy()
                     }
 
+                    //TODO FIX THIS
+                    this.routines.splice(playableRoutine.routineLineNumber, 1)
+                    for(var i = playableRoutine.routineLineNumber; i < this.routines.length; i++) {
+                        for(var j = 0; j < this.routines[i].length; i++) {
+                            this.routines[i][j].routineLineNumber -= 1
+                        }
+                    }
+                    
                     this.completedRoutines++
                     //this.routines[playableRoutine.routineLineNumber] = [] 
 
-                    if (this.completedRoutines == this.routines.length) {
+                    if (this.routines.length == 0) {
                         console.log("WIN!")
                         this.win()
                     }
@@ -326,7 +334,14 @@ export class GameLevel implements ButtonListener {
             for (var i = 0; i < this.changeableElementList.length; i++) {
                 let elementToChange = this.changeableElementList[i]
                 console.log(i + " " + elementToChange.isSmall)
-                if (!elementToChange.isSmall) elementToChange.setTint(MA_PRIMARY_COLOR)
+                if (elementToChange.isSmall) {
+                    let routineField = <RoutineField> elementToChange
+
+                    if(!routineField.isClickedDown) 
+                        elementToChange.setTint(MA_PRIMARY_COLOR)
+                } else {
+                    elementToChange.setTint(MA_PRIMARY_COLOR)
+                }
             }
             if (button instanceof RoutineField) {
                 let routineField = <RoutineField>button
