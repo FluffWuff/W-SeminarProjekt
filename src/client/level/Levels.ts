@@ -205,10 +205,7 @@ export class GameLevel implements ButtonListener {
 
                 if(!nextRoutineField.isDestroyed) nextRoutineField.setTint(MA_SELECTED_COLOR) // after routine is completed, this line can produce a lot of errors
 
-                //ADD more data for onDown() call
-                // - all current routines
-                // - current routines pos
-                // - all current routine fields
+
                 this.legalGridField = gridField
                 this.playableRoutines.push(nextRoutineField)
             }
@@ -266,24 +263,14 @@ export class GameLevel implements ButtonListener {
             
             //1. routine
             for (var i = 0; i < this.playableRoutines.length; i++) {
-                let playableRoutine = this.playableRoutines[i]
+                let playableRoutine = this.playableRoutines[i] // if undefined => routine is finished at index i
+                if(typeof playableRoutine == undefined) continue
                 playableRoutine.setTint(MA_HIDE_COLOR)
                 playableRoutine.isClickedDown = true
                 console.log("Clickeddown successfully: " + playableRoutine.text)
                 this.changeableElementList.pop()
 
 
-                //TODO FIX THIS 
-                // for (var i = 0; i < this.routines.length; i++) {
-                //     if(playableRoutine.routineLineNumber == i) continue
-                //     for (var j = 0; j < this.routines[i].length; j++) {
-                //         console.log( this.routines[i][j])
-                //         this.routines[i][j].isClickedDown = false
-                //         this.routines[i][j].setTint(MA_PRIMARY_COLOR)
-                //     }
-                // }
-
-                // this.changeableElementList[this.changeableElementList.indexOf(playableRoutine)] = null
                 //console.log(playableRoutine.nextRoutineField)
                 if (playableRoutine.nextRoutineField == null) {
                     console.log("Routine fertig, routineLineNumber: " + playableRoutine.routineLineNumber)
@@ -297,25 +284,14 @@ export class GameLevel implements ButtonListener {
                             this.changeableElementList.splice(changeableElementListIndex, 1)
                         }
                         completedRoutine[i].destroy()
-                    }
-
-                    //TODO FIX THIS
-                    this.routines.splice(playableRoutine.routineLineNumber, 1)
-                    for(var i = playableRoutine.routineLineNumber; i < this.routines.length; i++) {
-                        for(var j = 0; j < this.routines[i].length; i++) {
-                            this.routines[i][j].routineLineNumber -= 1
-                        }
-                    }
-                    
+                    }                    
                     this.completedRoutines++
-                    //this.routines[playableRoutine.routineLineNumber] = [] 
-
-                    if (this.routines.length == 0) {
-                        console.log("WIN!")
-                        this.win()
-                    }
                 }
-
+                
+            }
+            if (this.routines.length == this.completedRoutines) {
+                console.log("WIN!")
+                this.win()
             }
 
         }
