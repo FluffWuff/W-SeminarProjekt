@@ -220,6 +220,18 @@ export class GameLevel implements ButtonListener {
         if (button instanceof RoutineField) return
         let gridField = <GridField>button
         console.log(this.playableRoutines)
+
+        //check if button is within yellow playline
+        if(this.isPlayLineHorizontal) {
+            if(gridField.gridPosY != this.playLinePos[0]) { 
+                this.calculateMove(gridField.gridPosX, this.playLinePos[0])
+            }
+        } else {
+            if(gridField.gridPosX != this.playLinePos[0]) {
+                this.calculateMove(this.playLinePos[0], gridField.gridPosY)
+            }
+        }
+
         //IF YES -> ILLEGAL move
         if (this.legalGridField == null) {
             console.log("ILLEGAL MOVE!!!!")
@@ -328,6 +340,10 @@ export class GameLevel implements ButtonListener {
         this.playableRoutines = []
         this.legalGridField = null
         this.updatePlayLine(this.playLinePos[0])
+    }
+
+    private calculateMove(x: number, y: number) {
+        let gridField = this.grid[y][x]
     }
 
     private createMemoryAddress(x: number, y: number, isSmall: boolean, text?: string, gridPosX?: number, gridPosY?: number, routinePos?: number, nextRoutineField?: RoutineField): MemoryAddress {
