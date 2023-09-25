@@ -1,6 +1,8 @@
 import { GameScene } from "./scenes/GameScene.js"
 import { SelectionScene } from "./scenes/SelectionScene.js"
 import { SinglePlayerScene } from "./scenes/SinglePlayerScene.js"
+import { TestPipeline } from "./shader/TestShader.js"
+import { GameDefaultShaderPipeline } from "./shader/GameShaderPipeline.js"
 
 var config: Phaser.Types.Core.GameConfig = {
     width: 1920,
@@ -21,6 +23,11 @@ var config: Phaser.Types.Core.GameConfig = {
     },
     input: {
         gamepad: true
+    },
+    pipeline: {
+        //@ts-ignore
+        'GameDefaultShaderPipeline': GameDefaultShaderPipeline,
+        'TestShader': TestPipeline
     }
 }
 

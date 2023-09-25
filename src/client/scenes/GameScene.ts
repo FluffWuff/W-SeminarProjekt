@@ -1,4 +1,5 @@
 import { GameLevel } from "../level/Levels.js"
+import { GameDefaultShaderPipeline } from "../shader/GameShaderPipeline.js"
 import { GameLevelConfig, LEVEL_2_GAME_LEVEL_CONFIG, LEVEL_3_GAME_LEVEL_CONFIG, LEVEL_5_GAME_LEVEL_CONFIG, LEVEL_NIL_GAME_LEVEL_CONFIG, MA_BACKGROUND_32, MA_BACKGROUND_64 } from "../util/Constants.js"
 
 export class GameScene extends Phaser.Scene {
@@ -22,6 +23,8 @@ export class GameScene extends Phaser.Scene {
     }
 
     create() {
+        this.cameras.main.setPostPipeline(GameDefaultShaderPipeline)
+
         this.scene.scene.add.text(0, 0, "Version: 0.2.2")
         let gameLevel = new GameLevel(this, this.levelConfig)
     }
