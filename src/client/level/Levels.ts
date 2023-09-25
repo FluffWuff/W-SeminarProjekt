@@ -203,7 +203,7 @@ export class GameLevel implements ButtonListener {
             if (gridField.text == nextRoutineField.text) {
                 this.changeableElementList.push(nextRoutineField)
 
-                if(!nextRoutineField.isDestroyed) nextRoutineField.setTint(MA_SELECTED_COLOR) // after routine is completed, this line can produce a lot of errors
+                if (!nextRoutineField.isDestroyed) nextRoutineField.setTint(MA_SELECTED_COLOR) // after routine is completed, this line can produce a lot of errors
 
 
                 this.legalGridField = gridField
@@ -221,17 +221,48 @@ export class GameLevel implements ButtonListener {
         let gridField = <GridField>button
         console.log(this.playableRoutines)
 
-        //check if button is within yellow playline
-        if(this.isPlayLineHorizontal) {
-            if(gridField.gridPosY != this.playLinePos[0]) { 
-                this.calculateMove(gridField.gridPosX, this.playLinePos[0])
-            }
-        } else {
-            if(gridField.gridPosX != this.playLinePos[0]) {
-                this.calculateMove(this.playLinePos[0], gridField.gridPosY)
-            }
+        //check if button press is within yellow playline
+        console.log("Playline is horizontal: " + this.isPlayLineHorizontal + ", pos: " + this.playLinePos[0])
+        console.log()
+        if (this.isPlayLineHorizontal && gridField.gridPosY == this.playLinePos[0]) {
+            this.calculateMove(gridField.gridPosX, this.playLinePos[0])
+            return
+        } else if (gridField.gridPosX == this.playLinePos[0]) {
+            this.calculateMove(this.playLinePos[0], gridField.gridPosY)
+            return
         }
 
+        console.log("Move was outside of playline - Calculating pre-move...")
+    }
+
+    onOut(button: Button) {
+        if (this.changeableElementList.length != 0) {
+            console.log(button.text + " " + this.changeableElementList.length)
+            for (var i = 0; i < this.changeableElementList.length; i++) {
+                let elementToChange = this.changeableElementList[i]
+                console.log(i + " " + elementToChange.isSmall)
+                if (elementToChange.isSmall) {
+                    let routineField = <RoutineField>elementToChange
+
+                    if (!routineField.isClickedDown)
+                        elementToChange.setTint(MA_PRIMARY_COLOR)
+                } else {
+                    elementToChange.setTint(MA_PRIMARY_COLOR)
+                }
+            }
+            if (button instanceof RoutineField) {
+                let routineField = <RoutineField>button
+                if (routineField.isClickedDown) routineField.setTint(MA_HIDE_COLOR)
+            }
+            this.changeableElementList = []
+        }
+        this.playableRoutines = []
+        this.legalGridField = null
+        this.updatePlayLine(this.playLinePos[0])
+    }
+
+    private calculateMove(x: number, y: number) {
+        let gridField = this.grid[y][x]
         //IF YES -> ILLEGAL move
         if (this.legalGridField == null) {
             console.log("ILLEGAL MOVE!!!!")
@@ -240,7 +271,7 @@ export class GameLevel implements ButtonListener {
 
             for (var i = 0; i < this.routines.length; i++) {
                 for (var j = 0; j < this.routines[i].length; j++) {
-                    if(this.routines[i][j].isDestroyed) continue
+                    if (this.routines[i][j].isDestroyed) continue
                     console.log(this.routines[i][j])
 
                     this.routines[i][j].isClickedDown = false
@@ -259,11 +290,11 @@ export class GameLevel implements ButtonListener {
             let toBeCleared = this.routines.filter(routine => {
                 const routineIndices = routine.map(field => field.routineLineNumber)
                 return this.playableRoutines.every(pR => !routineIndices.includes(pR.routineLineNumber))
-            }) 
+            })
             console.log(toBeCleared.length)
             for (var i = 0; i < toBeCleared.length; i++) {
                 for (var j = 0; j < toBeCleared[i].length; j++) {
-                    if(toBeCleared[i][j].isDestroyed) continue
+                    if (toBeCleared[i][j].isDestroyed) continue
 
                     console.log(toBeCleared[i][j])
 
@@ -272,11 +303,11 @@ export class GameLevel implements ButtonListener {
 
                 }
             }
-            
+
             //1. routine
             for (var i = 0; i < this.playableRoutines.length; i++) {
                 let playableRoutine = this.playableRoutines[i] // if undefined => routine is finished at index i
-                if(typeof playableRoutine == undefined) continue
+                if (typeof playableRoutine == undefined) continue
                 playableRoutine.setTint(MA_HIDE_COLOR)
                 playableRoutine.isClickedDown = true
                 console.log("Clickeddown successfully: " + playableRoutine.text)
@@ -296,10 +327,10 @@ export class GameLevel implements ButtonListener {
                             this.changeableElementList.splice(changeableElementListIndex, 1)
                         }
                         completedRoutine[i].destroy()
-                    }                    
+                    }
                     this.completedRoutines++
                 }
-                
+
             }
             if (this.routines.length == this.completedRoutines) {
                 console.log("WIN!")
@@ -314,36 +345,6 @@ export class GameLevel implements ButtonListener {
         this.isPlayLineHorizontal = !this.isPlayLineHorizontal
         this.updatePlayLine(newPos)
         console.log(gridField.text)
-    }
-
-    onOut(button: Button) {
-        if (this.changeableElementList.length != 0) {
-            console.log(button.text + " " + this.changeableElementList.length)
-            for (var i = 0; i < this.changeableElementList.length; i++) {
-                let elementToChange = this.changeableElementList[i]
-                console.log(i + " " + elementToChange.isSmall)
-                if (elementToChange.isSmall) {
-                    let routineField = <RoutineField> elementToChange
-
-                    if(!routineField.isClickedDown) 
-                        elementToChange.setTint(MA_PRIMARY_COLOR)
-                } else {
-                    elementToChange.setTint(MA_PRIMARY_COLOR)
-                }
-            }
-            if (button instanceof RoutineField) {
-                let routineField = <RoutineField>button
-                if (routineField.isClickedDown) routineField.setTint(MA_HIDE_COLOR)
-            }
-            this.changeableElementList = []
-        }
-        this.playableRoutines = []
-        this.legalGridField = null
-        this.updatePlayLine(this.playLinePos[0])
-    }
-
-    private calculateMove(x: number, y: number) {
-        let gridField = this.grid[y][x]
     }
 
     private createMemoryAddress(x: number, y: number, isSmall: boolean, text?: string, gridPosX?: number, gridPosY?: number, routinePos?: number, nextRoutineField?: RoutineField): MemoryAddress {
