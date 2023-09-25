@@ -16,13 +16,11 @@ export class SelectionScene extends Phaser.Scene {
 
     create() {
         this.cameras.main.setPostPipeline(GameDefaultShaderPipeline);
-        
         let level1Box = new SelectionButton(this, 1920 / 2, 200, "Level 1", LEVEL_1_GAME_LEVEL_CONFIG)
         let level2Box = new SelectionButton(this, 1920 / 2, 300, "Level 2", LEVEL_2_GAME_LEVEL_CONFIG)
         let level3Box = new SelectionButton(this, 1920 / 2, 400, "Level 3", LEVEL_3_GAME_LEVEL_CONFIG)
         let level4Box = new SelectionButton(this, 1920 / 2, 500, "Level 4", LEVEL_4_GAME_LEVEL_CONFIG)
         let level5Box = new SelectionButton(this, 1920 / 2, 600, "Level 5", LEVEL_5_GAME_LEVEL_CONFIG)
-        
     }
 
 }

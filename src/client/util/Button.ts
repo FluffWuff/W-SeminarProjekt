@@ -51,6 +51,8 @@ export class Button extends Phaser.GameObjects.Group {
         })
     }
 
-    destroy(fromScene?: boolean): void {}
+    destroy(fromScene?: boolean): void {
+        super.destroy(true, true)
+    }
 
 }
