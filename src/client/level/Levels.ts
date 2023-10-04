@@ -186,31 +186,7 @@ export class GameLevel implements ButtonListener {
             }
         }
 
-        //highlighting matching fields in the routine
-        // if hovered field is in playline && in routine front -> highlight (yellow) routine field
-        for (var i = 0; i < this.routines.length; i++) {
-            var howMuchIsClickedDown = 0
-            var startRoutineField = this.routines[i][0]
-            //Springe zum aktuellsten Feld der Routine und zähle die gedrückten Felder:
-            do {
-                if (startRoutineField.isClickedDown) howMuchIsClickedDown++
-                startRoutineField = startRoutineField.nextRoutineField
-            } while (startRoutineField.nextRoutineField != null)
-
-            let nextRoutineField = this.routines[i][howMuchIsClickedDown]
-
-            //Checke ob der Wert des Spielfelds == Wert des aktuellen Routinefelds ist
-            if (gridField.text == nextRoutineField.text) {
-                this.changeableElementList.push(nextRoutineField)
-
-                if (!nextRoutineField.isDestroyed) nextRoutineField.setTint(MA_SELECTED_COLOR) // after routine is completed, this line can produce a lot of errors
-
-
-                this.legalGridField = gridField
-                this.playableRoutines.push(nextRoutineField)
-            }
-
-        }
+        this.calculateLegalField(gridField)
 
         //highlighting/indicating the current hoverd button/memoryadress - not original but makes it easier to play with
         button.setTint(MA_SELECTED_COLOR)
@@ -226,13 +202,24 @@ export class GameLevel implements ButtonListener {
         console.log()
         if (this.isPlayLineHorizontal && gridField.gridPosY == this.playLinePos[0]) {
             this.calculateMove(gridField.gridPosX, this.playLinePos[0])
+            console.log("Calculated actual move")
             return
         } else if (gridField.gridPosX == this.playLinePos[0]) {
             this.calculateMove(this.playLinePos[0], gridField.gridPosY)
+            console.log("Calculated actual move")
             return
         }
 
         console.log("Move was outside of playline - Calculating pre-move...")
+        if (this.isPlayLineHorizontal) {
+            this.calculateMove(gridField.gridPosX, this.playLinePos[0]) //Pre-Move
+        } else {
+            this.calculateMove(this.playLinePos[0], gridField.gridPosY) //Pre-Move
+        }
+        console.log("Calculated Pre-Move")
+        this.calculateMove(gridField.gridPosX, gridField.gridPosY) //Actual Move
+        console.log("Calculated actual move")
+
     }
 
     onOut(button: Button) {
@@ -263,6 +250,7 @@ export class GameLevel implements ButtonListener {
 
     private calculateMove(x: number, y: number) {
         let gridField = this.grid[y][x]
+        this.calculateLegalField(gridField)
         //IF YES -> ILLEGAL move
         if (this.legalGridField == null) {
             console.log("ILLEGAL MOVE!!!!")
@@ -307,7 +295,7 @@ export class GameLevel implements ButtonListener {
             //1. routine
             for (var i = 0; i < this.playableRoutines.length; i++) {
                 let playableRoutine = this.playableRoutines[i] // if undefined => routine is finished at index i
-                if (typeof playableRoutine == undefined) continue
+                if (playableRoutine.isDestroyed) continue
                 playableRoutine.setTint(MA_HIDE_COLOR)
                 playableRoutine.isClickedDown = true
                 console.log("Clickeddown successfully: " + playableRoutine.text)
@@ -345,6 +333,34 @@ export class GameLevel implements ButtonListener {
         this.isPlayLineHorizontal = !this.isPlayLineHorizontal
         this.updatePlayLine(newPos)
         console.log(gridField.text)
+    }
+
+    private calculateLegalField(gridField: GridField) {
+        //highlighting matching fields in the routine
+        // if hovered field is in playline && in routine front -> highlight (yellow) routine field
+        for (var i = 0; i < this.routines.length; i++) {
+            var howMuchIsClickedDown = 0
+            var startRoutineField = this.routines[i][0]
+            //Springe zum aktuellsten Feld der Routine und zähle die gedrückten Felder:
+            do {
+                if (startRoutineField.isClickedDown) howMuchIsClickedDown++
+                startRoutineField = startRoutineField.nextRoutineField
+            } while (startRoutineField.nextRoutineField != null)
+
+            let nextRoutineField = this.routines[i][howMuchIsClickedDown]
+
+            //Checke ob der Wert des Spielfelds == Wert des aktuellen Routinefelds ist
+            if (gridField.text == nextRoutineField.text) {
+                this.changeableElementList.push(nextRoutineField)
+
+                if (!nextRoutineField.isDestroyed) nextRoutineField.setTint(MA_SELECTED_COLOR) // after routine is completed, this line can produce a lot of errors
+
+
+                this.legalGridField = gridField
+                this.playableRoutines.push(nextRoutineField)
+            }
+
+        }
     }
 
     private createMemoryAddress(x: number, y: number, isSmall: boolean, text?: string, gridPosX?: number, gridPosY?: number, routinePos?: number, nextRoutineField?: RoutineField): MemoryAddress {

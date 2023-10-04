@@ -15,7 +15,6 @@ export class RoutineField extends Button {
     destroy() {
         this.isDestroyed = true
         super.destroy()
-        
     }
 
 }
