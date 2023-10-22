@@ -1,4 +1,4 @@
-import { DISTANCE_MA_RO, GR_START_POS_X, GR_START_POS_Y, MA_HEIGHT, MA_START_POS_X, MA_START_POS_Y, MA_PRIMARY_COLOR, MA_WIDH, RO_HEIGHT, RO_WIDTH, DISTANCE_MA_OV_X, DISTANCE_MA_OV_Y, OV_COLOR, MA_SELECTED_COLOR, MA_HIDE_COLOR, MA_HIGHLIGHT_COLOR, MA_HIDE_SELECTED_COLOR, GameLevelConfig } from "../util/Constants.js"
+import { DISTANCE_GF_RO, GR_START_POS_X, GR_START_POS_Y, GF_HEIGHT, GF_START_POS_X, GF_START_POS_Y, GF_PRIMARY_COLOR, GF_WIDH, RO_HEIGHT, RO_WIDTH, DISTANCE_GF_OV_X, DISTANCE_GF_OV_Y, OV_COLOR, GF_SELECTED_COLOR, GF_HIDE_COLOR, GF_HIGHLIGHT_COLOR, GF_HIDE_SELECTED_COLOR, GameLevelConfig } from "../util/Constants.js"
 import { Button } from "../util/Button.js"
 import { OverflowManager } from "./Overflow.js"
 import { RoutineField, GridField } from './MemoryAddressFields.js';
@@ -44,17 +44,17 @@ export class GameLevel implements ButtonListener {
     }
 
     private fillGridUp() {
-        let gridText = this.scene.add.text(MA_START_POS_X * this.scene.cameras.main.centerX * 2, MA_START_POS_Y * this.scene.cameras.main.centerY * 2, "memory matrix", {
+        let gridText = this.scene.add.text(GF_START_POS_X * this.scene.cameras.main.centerX * 2, GF_START_POS_Y * this.scene.cameras.main.centerY * 2, "memory matrix", {
             align: 'left',
             font: '24px DS-DIGII',
-            //backgroundColor: MA_BACKGROUND_COLOR,
-            color: "#" + MA_PRIMARY_COLOR.toString(16)
+            //backgroundColor: GF_BACKGROUND_COLOR,
+            color: "#" + GF_PRIMARY_COLOR.toString(16)
         })
         for (var i = 0; i < this.levelConfig.rows; i++) {
             this.grid[i] = []
             for (var j = 0; j < this.levelConfig.columns; j++) {
-                this.grid[i][j] = this.createMemoryAddress(MA_WIDH * j * 1.025 + MA_START_POS_X * this.scene.cameras.main.centerX * 2,
-                    MA_HEIGHT * i * 1.025 + MA_START_POS_Y * this.scene.cameras.main.centerY * 2 + 25, false, null, j, i) as GridField
+                this.grid[i][j] = this.createMemoryAddress(GF_WIDH * j * 1.025 + GF_START_POS_X * this.scene.cameras.main.centerX * 2,
+                    GF_HEIGHT * i * 1.025 + GF_START_POS_Y * this.scene.cameras.main.centerY * 2 + 25, false, null, j, i) as GridField
             }
         }
     }
@@ -63,11 +63,11 @@ export class GameLevel implements ButtonListener {
     private createRoutines() {
         //Anzahl der Routinen
         let amount = Math.round(Math.random() * (this.levelConfig.maxRoutines - this.levelConfig.minRoutines) + this.levelConfig.minRoutines)
-        let routineText = this.scene.add.text(MA_WIDH * this.levelConfig.columns * 1.025 + MA_START_POS_X * this.scene.cameras.main.centerX * 2 + DISTANCE_MA_RO,
-            MA_START_POS_Y * this.scene.cameras.main.centerY * 2, "override routines", {
+        let routineText = this.scene.add.text(GF_WIDH * this.levelConfig.columns * 1.025 + GF_START_POS_X * this.scene.cameras.main.centerX * 2 + DISTANCE_GF_RO,
+            GF_START_POS_Y * this.scene.cameras.main.centerY * 2, "override routines", {
             align: 'left',
             font: '16px DS-DIGII',
-            color: "#" + MA_PRIMARY_COLOR.toString(16)
+            color: "#" + GF_PRIMARY_COLOR.toString(16)
         })
         for (var i = 0; i < amount; i++) {
             this.routines[i] = []
@@ -79,8 +79,8 @@ export class GameLevel implements ButtonListener {
             for (var j = 0; j < Math.round(Math.random() * (this.levelConfig.maxRoutineLength - this.levelConfig.minRoutineLength) + this.levelConfig.minRoutineLength); j++) {
                 let text = this.grid[lastV][lastH].text
                 let currentRoutineField = this.createMemoryAddress(
-                    RO_WIDTH * j * 1.025 + MA_WIDH * this.levelConfig.columns * 1.025 + MA_START_POS_X * this.scene.cameras.main.centerX * 2 + DISTANCE_MA_RO - 16,
-                    RO_HEIGHT * i * 1.025 + MA_START_POS_Y * this.scene.cameras.main.centerY * 2, true, text, j) as RoutineField
+                    RO_WIDTH * j * 1.025 + GF_WIDH * this.levelConfig.columns * 1.025 + GF_START_POS_X * this.scene.cameras.main.centerX * 2 + DISTANCE_GF_RO - 16,
+                    RO_HEIGHT * i * 1.025 + GF_START_POS_Y * this.scene.cameras.main.centerY * 2, true, text, j) as RoutineField
 
                 currentRoutineField.routineLineNumber = i
 
@@ -115,7 +115,7 @@ export class GameLevel implements ButtonListener {
     private updatePlayLine(pos: number) {
         //Alte play line zurücksetzen 
         for (var i = 0; i < this.playLinePos[1].length; i++) {
-            this.playLinePos[1][i].setTint(MA_PRIMARY_COLOR)
+            this.playLinePos[1][i].setTint(GF_PRIMARY_COLOR)
         }
         this.playLinePos[1] = []
 
@@ -124,14 +124,14 @@ export class GameLevel implements ButtonListener {
         if (this.isPlayLineHorizontal) {
             let rowFieldList = this.grid[pos]
             for (var i = 0; i < rowFieldList.length; i++) {
-                rowFieldList[i].setTint(MA_SELECTED_COLOR)
+                rowFieldList[i].setTint(GF_SELECTED_COLOR)
                 this.playLinePos[1].push(rowFieldList[i])
             }
         } else {
             for (var i = 0; i < this.grid.length; i++) {
                 let playableButton = this.grid[i][pos]
 
-                playableButton.setTint(MA_SELECTED_COLOR)
+                playableButton.setTint(GF_SELECTED_COLOR)
                 this.playLinePos[1].push(playableButton)
 
             }
@@ -148,15 +148,15 @@ export class GameLevel implements ButtonListener {
 
                     if (button.text != gridElement.text) {
                         this.changeableElementList.push(gridElement)
-                        gridElement.setTint(MA_HIDE_COLOR)
+                        gridElement.setTint(GF_HIDE_COLOR)
                     }
                     if ((!this.isPlayLineHorizontal && this.playLinePos[0] == gridElement.gridPosX) ||
                         (this.isPlayLineHorizontal && this.playLinePos[0] == gridElement.gridPosY)) {
                         //console.log(gridElement.text)
                         if (button.text == gridElement.text) {
-                            gridElement.setTint(MA_SELECTED_COLOR)
+                            gridElement.setTint(GF_SELECTED_COLOR)
                         } else {
-                            gridElement.setTint(MA_HIDE_SELECTED_COLOR)
+                            gridElement.setTint(GF_HIDE_SELECTED_COLOR)
                         }
                     }
                 }
@@ -172,7 +172,7 @@ export class GameLevel implements ButtonListener {
             for (var i = 0; i < rowFieldList.length; i++) {
                 let changeableButton = rowFieldList[i]
                 if (changeableButton.gridPosX != this.playLinePos[0]) {
-                    changeableButton.setTint(MA_HIGHLIGHT_COLOR)
+                    changeableButton.setTint(GF_HIGHLIGHT_COLOR)
                     this.changeableElementList.push(changeableButton)
                 }
             }
@@ -181,7 +181,7 @@ export class GameLevel implements ButtonListener {
                 let changeableButton = this.grid[i][gridField.gridPosX]
                 if (changeableButton.gridPosY != this.playLinePos[0]) {
                     this.changeableElementList.push(changeableButton)
-                    changeableButton.setTint(MA_HIGHLIGHT_COLOR)
+                    changeableButton.setTint(GF_HIGHLIGHT_COLOR)
                 }
             }
         }
@@ -203,7 +203,7 @@ export class GameLevel implements ButtonListener {
             if (gridField.text == nextRoutineField.text) {
                 this.changeableElementList.push(nextRoutineField)
 
-                if(!nextRoutineField.isDestroyed) nextRoutineField.setTint(MA_SELECTED_COLOR) // after routine is completed, this line can produce a lot of errors
+                if(!nextRoutineField.isDestroyed) nextRoutineField.setTint(GF_SELECTED_COLOR) // after routine is completed, this line can produce a lot of errors
 
 
                 this.legalGridField = gridField
@@ -213,7 +213,7 @@ export class GameLevel implements ButtonListener {
         }
 
         //highlighting/indicating the current hoverd button/memoryadress - not original but makes it easier to play with
-        button.setTint(MA_SELECTED_COLOR)
+        button.setTint(GF_SELECTED_COLOR)
     }
 
     onDown(button: Button) {
@@ -232,7 +232,7 @@ export class GameLevel implements ButtonListener {
                     console.log(this.routines[i][j])
 
                     this.routines[i][j].isClickedDown = false
-                    this.routines[i][j].setTint(MA_PRIMARY_COLOR)
+                    this.routines[i][j].setTint(GF_PRIMARY_COLOR)
 
                 }
             }
@@ -256,7 +256,7 @@ export class GameLevel implements ButtonListener {
                     console.log(toBeCleared[i][j])
 
                     toBeCleared[i][j].isClickedDown = false
-                    toBeCleared[i][j].setTint(MA_PRIMARY_COLOR)
+                    toBeCleared[i][j].setTint(GF_PRIMARY_COLOR)
 
                 }
             }
@@ -265,7 +265,7 @@ export class GameLevel implements ButtonListener {
             for (var i = 0; i < this.playableRoutines.length; i++) {
                 let playableRoutine = this.playableRoutines[i] // if undefined => routine is finished at index i
                 if(typeof playableRoutine == undefined) continue
-                playableRoutine.setTint(MA_HIDE_COLOR)
+                playableRoutine.setTint(GF_HIDE_COLOR)
                 playableRoutine.isClickedDown = true
                 console.log("Clickeddown successfully: " + playableRoutine.text)
                 this.changeableElementList.pop()
@@ -314,14 +314,14 @@ export class GameLevel implements ButtonListener {
                     let routineField = <RoutineField> elementToChange
 
                     if(!routineField.isClickedDown) 
-                        elementToChange.setTint(MA_PRIMARY_COLOR)
+                        elementToChange.setTint(GF_PRIMARY_COLOR)
                 } else {
-                    elementToChange.setTint(MA_PRIMARY_COLOR)
+                    elementToChange.setTint(GF_PRIMARY_COLOR)
                 }
             }
             if (button instanceof RoutineField) {
                 let routineField = <RoutineField>button
-                if (routineField.isClickedDown) routineField.setTint(MA_HIDE_COLOR)
+                if (routineField.isClickedDown) routineField.setTint(GF_HIDE_COLOR)
             }
             this.changeableElementList = []
         }
