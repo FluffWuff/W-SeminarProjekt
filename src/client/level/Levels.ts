@@ -268,14 +268,14 @@ export class GameLevel implements ButtonListener {
                     let routineField = <RoutineField>elementToChange
 
                     if (!routineField.isClickedDown)
-                        elementToChange.setTint(MA_PRIMARY_COLOR)
+                        elementToChange.setTint(GF_PRIMARY_COLOR)
                 } else {
-                    elementToChange.setTint(MA_PRIMARY_COLOR)
+                    elementToChange.setTint(GF_PRIMARY_COLOR)
                 }
             }
             if (button instanceof RoutineField) {
                 let routineField = <RoutineField>button
-                if (routineField.isClickedDown) routineField.setTint(MA_HIDE_COLOR)
+                if (routineField.isClickedDown) routineField.setTint(GF_HIDE_COLOR)
             }
             this.changeableElementList = []
         }
@@ -333,7 +333,7 @@ export class GameLevel implements ButtonListener {
                 let playableRoutine = this.playableRoutines[i] // if undefined => routine is finished at index i
 
                 if (playableRoutine.isDestroyed) continue
-                playableRoutine.setTint(MA_HIDE_COLOR)
+                playableRoutine.setTint(GF_HIDE_COLOR)
 
                 playableRoutine.isClickedDown = true
                 console.log("Clickeddown successfully: " + playableRoutine.text)
@@ -391,7 +391,7 @@ export class GameLevel implements ButtonListener {
             if (gridField.text == nextRoutineField.text) {
                 this.changeableElementList.push(nextRoutineField)
 
-                if (!nextRoutineField.isDestroyed) nextRoutineField.setTint(MA_SELECTED_COLOR) // after routine is completed, this line can produce a lot of errors
+                if (!nextRoutineField.isDestroyed) nextRoutineField.setTint(GF_SELECTED_COLOR) // after routine is completed, this line can produce a lot of errors
 
 
                 this.legalGridField = gridField

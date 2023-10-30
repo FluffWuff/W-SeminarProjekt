@@ -5,7 +5,7 @@ import { GameLevelConfig, LEVEL_2_GAME_LEVEL_CONFIG, LEVEL_3_GAME_LEVEL_CONFIG, 
 export class GameScene extends Phaser.Scene {
 
     levelConfig: GameLevelConfig
-
+    isShaderOn: Boolean
     constructor() {
         super({
             key: "GameScene"
@@ -13,7 +13,8 @@ export class GameScene extends Phaser.Scene {
     }
 
     init(data) {
-        this.levelConfig = data
+        this.levelConfig = data.levelGameConfig
+        this.isShaderOn = data.isShaderOn
     }
 
 
@@ -23,7 +24,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     create() {
-        this.cameras.main.setPostPipeline(GameDefaultShaderPipeline)
+        if(this.isShaderOn) this.cameras.main.setPostPipeline(GameDefaultShaderPipeline)
 
         this.scene.scene.add.text(0, 0, "Version: 0.2.2")
         let gameLevel = new GameLevel(this, this.levelConfig)
