@@ -17,21 +17,21 @@ export const DISTANCE_SINGLE_MULTI_PLAYER_TEXT_X = 50 //Multipler text ist abhä
 
 
 //MemoryAddress/Spielfeld:
-export const MA_WIDH = 64
-export const MA_HEIGHT = 64
-export const MA_PRIMARY_COLOR = greenPrimaryColor
-export const MA_SELECTED_COLOR = yellowColor
-export const MA_HIDE_SELECTED_COLOR = darkYellowColr
-export const MA_HIDE_COLOR = darkGreenColor
-export const MA_HIGHLIGHT_COLOR = brightGreenColor
-export const MA_TEXT_SIZE = 16
-export const MA_BACKGROUND_32 = 'memoryaddress_background_32'
-export const MA_BACKGROUND_64 = 'memoryaddress_background_64'
-export const MA_START_POS_X = 0.3
-export const MA_START_POS_Y = 0.3
+export const GF_WIDH = 64
+export const GF_HEIGHT = 64
+export const GF_PRIMARY_COLOR = greenPrimaryColor
+export const GF_SELECTED_COLOR = yellowColor
+export const GF_HIDE_SELECTED_COLOR = darkYellowColr
+export const GF_HIDE_COLOR = darkGreenColor
+export const GF_HIGHLIGHT_COLOR = brightGreenColor
+export const GF_TEXT_SIZE = 16
+export const GF_BACKGROUND_32 = 'memoryaddress_background_32'
+export const GF_BACKGROUND_64 = 'memoryaddress_background_64'
+export const GF_START_POS_X = 0.3
+export const GF_START_POS_Y = 0.3
 
 //Distanz zwischen Spielfeld und Routinen X-Achse:
-export const DISTANCE_MA_RO = 60
+export const DISTANCE_GF_RO = 60
 
 //Spielfeld:
 export const GR_START_POS_X = 40
@@ -42,8 +42,8 @@ export const RO_WIDTH = 32
 export const RO_HEIGHT = 32
 
 //Overflow
-export const DISTANCE_MA_OV_X = 150
-export const DISTANCE_MA_OV_Y = 250
+export const DISTANCE_GF_OV_X = 150
+export const DISTANCE_GF_OV_Y = 250
 export const OV_COLOR = whiteColor
 export const OV_FILL_COLOR = redColor
 

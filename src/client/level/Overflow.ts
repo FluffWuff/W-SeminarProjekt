@@ -1,4 +1,4 @@
-import { DISTANCE_MA_OV_X, DISTANCE_MA_OV_Y, MA_BACKGROUND_64, MA_SELECTED_COLOR, MA_START_POS_X, MA_START_POS_Y, MA_WIDH, OV_COLOR, OV_FILL_COLOR } from "../util/Constants.js"
+import { DISTANCE_GF_OV_X, DISTANCE_GF_OV_Y, GF_BACKGROUND_64, GF_SELECTED_COLOR, GF_START_POS_X, GF_START_POS_Y, GF_WIDH, OV_COLOR, OV_FILL_COLOR } from "../util/Constants.js"
 import { GameLevel } from "./Levels.js"
 
 export class OverflowManager extends Phaser.GameObjects.Group {
@@ -10,12 +10,12 @@ export class OverflowManager extends Phaser.GameObjects.Group {
 
     constructor(private gameLevel: GameLevel, private maxOverflow: number) {
         super(gameLevel.scene)
-        let overflowBasisX = MA_START_POS_X*this.scene.cameras.main.centerX*2+DISTANCE_MA_OV_X
-        let overflowBasisY = MA_START_POS_Y*this.scene.cameras.main.centerY*2-DISTANCE_MA_OV_Y
+        let overflowBasisX = GF_START_POS_X*this.scene.cameras.main.centerX*2+DISTANCE_GF_OV_X
+        let overflowBasisY = GF_START_POS_Y*this.scene.cameras.main.centerY*2-DISTANCE_GF_OV_Y
         this.textElement = new Phaser.GameObjects.Text(gameLevel.scene, overflowBasisX, overflowBasisY, "overflow ("+this.currentOverflow+"/"+this.maxOverflow+")", {
             align: 'left',
             font: '20px DS-DIGII',
-            //backgroundColor: MA_BACKGROUND_COLOR,
+            //backgroundColor: GF_BACKGROUND_COLOR,
             color: "#"+OV_COLOR.toString(16),
         })
         
@@ -25,11 +25,11 @@ export class OverflowManager extends Phaser.GameObjects.Group {
                 align: 'center',
                 font: '64px DS-DIGII',
             }
-            let overflowFieldTextElement = new Phaser.GameObjects.Text(gameLevel.scene, overflowBasisX + MA_WIDH*i*1.025, overflowBasisY+20, "", style)
+            let overflowFieldTextElement = new Phaser.GameObjects.Text(gameLevel.scene, overflowBasisX + GF_WIDH*i*1.025, overflowBasisY+20, "", style)
             let imageElement = gameLevel.scene.make.image({
-                x: overflowBasisX + MA_WIDH*i*1.025,
+                x: overflowBasisX + GF_WIDH*i*1.025,
                 y: overflowBasisY+55,
-                key: MA_BACKGROUND_64,
+                key: GF_BACKGROUND_64,
                 add: true
             })
             imageElement.setPosition(imageElement.x+32, imageElement.y)
@@ -66,7 +66,7 @@ export class OverflowObject {
         let imageElement = scene.make.image({
             x: x,
             y: y,
-            key: MA_BACKGROUND_64,
+            key: GF_BACKGROUND_64,
             add: true
         })
         overflowManager.add(imageElement, true)

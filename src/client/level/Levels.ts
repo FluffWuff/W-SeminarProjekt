@@ -1,4 +1,4 @@
-import { DISTANCE_MA_RO, GR_START_POS_X, GR_START_POS_Y, MA_HEIGHT, MA_START_POS_X, MA_START_POS_Y, MA_PRIMARY_COLOR, MA_WIDH, RO_HEIGHT, RO_WIDTH, DISTANCE_MA_OV_X, DISTANCE_MA_OV_Y, OV_COLOR, MA_SELECTED_COLOR, MA_HIDE_COLOR, MA_HIGHLIGHT_COLOR, MA_HIDE_SELECTED_COLOR, GameLevelConfig } from "../util/Constants.js"
+import { DISTANCE_GF_RO, GR_START_POS_X, GR_START_POS_Y, GF_HEIGHT, GF_START_POS_X, GF_START_POS_Y, GF_PRIMARY_COLOR, GF_WIDH, RO_HEIGHT, RO_WIDTH, DISTANCE_GF_OV_X, DISTANCE_GF_OV_Y, OV_COLOR, GF_SELECTED_COLOR, GF_HIDE_COLOR, GF_HIGHLIGHT_COLOR, GF_HIDE_SELECTED_COLOR, GameLevelConfig } from "../util/Constants.js"
 import { Button } from "../util/Button.js"
 import { OverflowManager } from "./Overflow.js"
 import { RoutineField, GridField } from './MemoryAddressFields.js';
@@ -14,22 +14,34 @@ export class GameLevel implements ButtonListener {
 
     private overflow: OverflowManager
 
+    /**
+     * Elemente (Gridfields, Routinefields), die bei onOver() oder onDown() geändert wurden
+     * In onOut() werden diese Elemente in ihren Urzustand gebracht.
+     */
     private changeableElementList: MemoryAddress[] = []
 
+
     private isPlayLineHorizontal = true
+    /**
+     * Die erste Zahl gibt den index der Linie innerhalb des Gridfields an
+     * Diese Zahl ist unabhängig vom boolean @isPlayLineHorizontal
+     * Das Zweite Element in diesem Pair ist die eine Kopie des Gridfields an der Stelle des index
+     */
     private playLinePos: [number, GridField[]] = [0, []]
+    
     private legalGridField: GridField = null
 
     private playableRoutines: RoutineField[] = []
     private completedRoutines: number = 0
+
     constructor(public scene: Phaser.Scene, private levelConfig: GameLevelConfig) {
         this.grid = []
 
         this.fillGridUp()
         this.createRoutines()
         this.overflow = new OverflowManager(this, this.levelConfig.maxOverflow)
-        this.createTimer()
-        this.createDetails()
+        //this.createTimer()
+        //this.createDetails()
         this.updatePlayLine(0)
     }
 
@@ -44,50 +56,71 @@ export class GameLevel implements ButtonListener {
     }
 
     private fillGridUp() {
-        let gridText = this.scene.add.text(MA_START_POS_X * this.scene.cameras.main.centerX * 2, MA_START_POS_Y * this.scene.cameras.main.centerY * 2, "memory matrix", {
+        let gridText = this.scene.add.text(GF_START_POS_X * this.scene.cameras.main.centerX * 2, GF_START_POS_Y * this.scene.cameras.main.centerY * 2, "memory matrix", {
             align: 'left',
             font: '24px DS-DIGII',
-            //backgroundColor: MA_BACKGROUND_COLOR,
-            color: "#" + MA_PRIMARY_COLOR.toString(16)
+            //backgroundColor: GF_BACKGROUND_COLOR,
+            color: "#" + GF_PRIMARY_COLOR.toString(16)
         })
         for (var i = 0; i < this.levelConfig.rows; i++) {
             this.grid[i] = []
             for (var j = 0; j < this.levelConfig.columns; j++) {
-                this.grid[i][j] = this.createMemoryAddress(MA_WIDH * j * 1.025 + MA_START_POS_X * this.scene.cameras.main.centerX * 2,
-                    MA_HEIGHT * i * 1.025 + MA_START_POS_Y * this.scene.cameras.main.centerY * 2 + 25, false, null, j, i) as GridField
+                this.grid[i][j] = this.createMemoryAddress(GF_WIDH * j * 1.025 + GF_START_POS_X * this.scene.cameras.main.centerX * 2,
+                    GF_HEIGHT * i * 1.025 + GF_START_POS_Y * this.scene.cameras.main.centerY * 2 + 25, false, null, j, i) as GridField
             }
         }
     }
 
-    // NICHT ANFASSEN
+    /**
+     * Diese Funktion ist zuständig, um alle Routinen zu erstellen, sodass diese ineinander schlüssig und verkettet sind.
+     */
     private createRoutines() {
-        //Anzahl der Routinen
-        let amount = Math.round(Math.random() * (this.levelConfig.maxRoutines - this.levelConfig.minRoutines) + this.levelConfig.minRoutines)
-        let routineText = this.scene.add.text(MA_WIDH * this.levelConfig.columns * 1.025 + MA_START_POS_X * this.scene.cameras.main.centerX * 2 + DISTANCE_MA_RO,
-            MA_START_POS_Y * this.scene.cameras.main.centerY * 2, "override routines", {
+        //Bestimmung der Anzahl der Routinen
+        let routinenAmount = Math.round(Math.random() * (this.levelConfig.maxRoutines - this.levelConfig.minRoutines) + this.levelConfig.minRoutines)
+        let routineText = this.scene.add.text(GF_WIDH * this.levelConfig.columns * 1.025 + GF_START_POS_X * this.scene.cameras.main.centerX * 2 + DISTANCE_GF_RO,
+            GF_START_POS_Y * this.scene.cameras.main.centerY * 2, "override routines", {
             align: 'left',
             font: '16px DS-DIGII',
-            color: "#" + MA_PRIMARY_COLOR.toString(16)
+            color: "#" + GF_PRIMARY_COLOR.toString(16)
         })
-        for (var i = 0; i < amount; i++) {
+
+        //Erstellung der einzelnen Routinen
+        for (var i = 0; i < routinenAmount; i++) {
             this.routines[i] = []
-            let isVer = Math.random() < 0.5
+            let isVer = Math.random() < 0.5 //Entscheide ob vertikal oder horizontal die Routine beginnen soll
+            
+            /**
+             * Startpunkt der aller ersten Routinenfield in der Routine
+             * lastH und lastV werden in der kommenden for-loop immer abwechselnd erneuert
+             */
             let lastH = Math.floor(this.levelConfig.columns * Math.random())
             let lastV = Math.floor(this.levelConfig.rows * Math.random())
-            //console.log("Creating new Routine with startH " + lastH + " and startV " + lastV)
-            var lastRoutineField: RoutineField = null
-            for (var j = 0; j < Math.round(Math.random() * (this.levelConfig.maxRoutineLength - this.levelConfig.minRoutineLength) + this.levelConfig.minRoutineLength); j++) {
-                let text = this.grid[lastV][lastH].text
-                let currentRoutineField = this.createMemoryAddress(
-                    RO_WIDTH * j * 1.025 + MA_WIDH * this.levelConfig.columns * 1.025 + MA_START_POS_X * this.scene.cameras.main.centerX * 2 + DISTANCE_MA_RO - 16,
-                    RO_HEIGHT * i * 1.025 + MA_START_POS_Y * this.scene.cameras.main.centerY * 2, true, text, j) as RoutineField
+            console.log("Creating new Routine starting from startH " + lastH + " and startV " + lastV)
 
+            let previousRoutineField: RoutineField = null
+
+            //Bestimmung der momentanten Routinenlänge mit einer Mindestlänge
+            let routinenLength = Math.round(Math.random() * (this.levelConfig.maxRoutineLength - this.levelConfig.minRoutineLength) + this.levelConfig.minRoutineLength)  
+            for (var j = 0; j < routinenLength; j++) {
+                let text = this.grid[lastV][lastH].text
+                //Graphische Erstellung des Routinefields
+                let currentRoutineField = this.createMemoryAddress(
+                    RO_WIDTH * j * 1.025 + GF_WIDH * this.levelConfig.columns * 1.025 + GF_START_POS_X * this.scene.cameras.main.centerX * 2 + DISTANCE_GF_RO - 16,
+                    RO_HEIGHT * i * 1.025 + GF_START_POS_Y * this.scene.cameras.main.centerY * 2, true, text, j) as RoutineField
+
+                /**
+                 * Hier wird das momentane Routinefield mit dem aktuellen Index der Routinenliste vergeben
+                 * Ist für spätere Abfragen in onOver() und onDown() wichtig
+                 */
                 currentRoutineField.routineLineNumber = i
 
-                if (lastRoutineField != null)
-                    lastRoutineField.nextRoutineField = currentRoutineField
-                lastRoutineField = currentRoutineField
+                //Setze die Referenz vom vorherigen Routinefield zum jetzigen Routinefield, wenn das jetzige nicht das letzte ist
+                if (previousRoutineField != null)
+                    previousRoutineField.nextRoutineField = currentRoutineField 
+                previousRoutineField = currentRoutineField
                 this.routines[i][j] = currentRoutineField
+
+                //Bestimmung des neuen vertikalen oder horziontalen Wertes für die nächste Iterierung
                 if (isVer) {
                     let newV = Math.floor(this.levelConfig.rows * Math.random())
                     while (newV == lastV) newV = Math.floor(this.levelConfig.rows * Math.random())
@@ -98,11 +131,13 @@ export class GameLevel implements ButtonListener {
                     lastH = newH
                 }
                 //console.log("Next h: " + lastH + " v: "+ lastV)
+                //Wechsel von horizontaler zur vertikalen und andersherum
                 isVer = !isVer
             }
         }
 
     }
+
 
     private createTimer() {
 
@@ -113,32 +148,32 @@ export class GameLevel implements ButtonListener {
     }
 
     private updatePlayLine(pos: number) {
-        //Alte play line zurücksetzen 
+        //Alte Spiellinie zurücksetzen 
         for (var i = 0; i < this.playLinePos[1].length; i++) {
-            this.playLinePos[1][i].setTint(MA_PRIMARY_COLOR)
+            this.playLinePos[1][i].setTint(GF_PRIMARY_COLOR)
         }
         this.playLinePos[1] = []
 
-        //neue play line setzen
+        //Neue Spiellinie setzen
         this.playLinePos[0] = pos
         if (this.isPlayLineHorizontal) {
             let rowFieldList = this.grid[pos]
             for (var i = 0; i < rowFieldList.length; i++) {
-                rowFieldList[i].setTint(MA_SELECTED_COLOR)
+                rowFieldList[i].setTint(GF_SELECTED_COLOR)
                 this.playLinePos[1].push(rowFieldList[i])
             }
         } else {
             for (var i = 0; i < this.grid.length; i++) {
                 let playableButton = this.grid[i][pos]
 
-                playableButton.setTint(MA_SELECTED_COLOR)
+                playableButton.setTint(GF_SELECTED_COLOR)
                 this.playLinePos[1].push(playableButton)
 
             }
         }
     }
 
-    onOver(button: Button) {
+    onOver(button: MemoryAddress) {
         //hides all fields not matching the same value in the grid - highlighting only fields who match
         //responsible for managing the highlighting if hoverd over a routine field
         if (button instanceof RoutineField) {
@@ -148,15 +183,15 @@ export class GameLevel implements ButtonListener {
 
                     if (button.text != gridElement.text) {
                         this.changeableElementList.push(gridElement)
-                        gridElement.setTint(MA_HIDE_COLOR)
+                        gridElement.setTint(GF_HIDE_COLOR)
                     }
                     if ((!this.isPlayLineHorizontal && this.playLinePos[0] == gridElement.gridPosX) ||
                         (this.isPlayLineHorizontal && this.playLinePos[0] == gridElement.gridPosY)) {
                         //console.log(gridElement.text)
                         if (button.text == gridElement.text) {
-                            gridElement.setTint(MA_SELECTED_COLOR)
+                            gridElement.setTint(GF_SELECTED_COLOR)
                         } else {
-                            gridElement.setTint(MA_HIDE_SELECTED_COLOR)
+                            gridElement.setTint(GF_HIDE_SELECTED_COLOR)
                         }
                     }
                 }
@@ -172,7 +207,7 @@ export class GameLevel implements ButtonListener {
             for (var i = 0; i < rowFieldList.length; i++) {
                 let changeableButton = rowFieldList[i]
                 if (changeableButton.gridPosX != this.playLinePos[0]) {
-                    changeableButton.setTint(MA_HIGHLIGHT_COLOR)
+                    changeableButton.setTint(GF_HIGHLIGHT_COLOR)
                     this.changeableElementList.push(changeableButton)
                 }
             }
@@ -181,18 +216,19 @@ export class GameLevel implements ButtonListener {
                 let changeableButton = this.grid[i][gridField.gridPosX]
                 if (changeableButton.gridPosY != this.playLinePos[0]) {
                     this.changeableElementList.push(changeableButton)
-                    changeableButton.setTint(MA_HIGHLIGHT_COLOR)
+                    changeableButton.setTint(GF_HIGHLIGHT_COLOR)
                 }
             }
         }
 
         this.calculateLegalField(gridField)
 
+
         //highlighting/indicating the current hoverd button/memoryadress - not original but makes it easier to play with
-        button.setTint(MA_SELECTED_COLOR)
+        button.setTint(GF_SELECTED_COLOR)
     }
 
-    onDown(button: Button) {
+    onDown(button: MemoryAddress) {
         if (button instanceof RoutineField) return
         let gridField = <GridField>button
         console.log(this.playableRoutines)
@@ -263,7 +299,7 @@ export class GameLevel implements ButtonListener {
                     console.log(this.routines[i][j])
 
                     this.routines[i][j].isClickedDown = false
-                    this.routines[i][j].setTint(MA_PRIMARY_COLOR)
+                    this.routines[i][j].setTint(GF_PRIMARY_COLOR)
 
                 }
             }
@@ -287,7 +323,7 @@ export class GameLevel implements ButtonListener {
                     console.log(toBeCleared[i][j])
 
                     toBeCleared[i][j].isClickedDown = false
-                    toBeCleared[i][j].setTint(MA_PRIMARY_COLOR)
+                    toBeCleared[i][j].setTint(GF_PRIMARY_COLOR)
 
                 }
             }
@@ -295,8 +331,10 @@ export class GameLevel implements ButtonListener {
             //1. routine
             for (var i = 0; i < this.playableRoutines.length; i++) {
                 let playableRoutine = this.playableRoutines[i] // if undefined => routine is finished at index i
+
                 if (playableRoutine.isDestroyed) continue
                 playableRoutine.setTint(MA_HIDE_COLOR)
+
                 playableRoutine.isClickedDown = true
                 console.log("Clickeddown successfully: " + playableRoutine.text)
                 this.changeableElementList.pop()
@@ -358,12 +396,13 @@ export class GameLevel implements ButtonListener {
 
                 this.legalGridField = gridField
                 this.playableRoutines.push(nextRoutineField)
+
             }
 
         }
     }
 
-    private createMemoryAddress(x: number, y: number, isSmall: boolean, text?: string, gridPosX?: number, gridPosY?: number, routinePos?: number, nextRoutineField?: RoutineField): MemoryAddress {
+    private createMemoryAddress(x: number, y: number, isSmall: boolean, text?: string, gridPosX?: number, gridPosY?: number, routinePos?: number): MemoryAddress {
         if (text == null) {
             let number = Math.round(Math.random() * (8 - 2) + 2)
             let letters = ["A", "B", "C", "D", "E", "F", "X"] //REWORK - BALANCE
