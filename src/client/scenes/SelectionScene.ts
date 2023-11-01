@@ -40,7 +40,7 @@ export class SelectionScene extends Phaser.Scene {
         
         //Tutorial:
         let tutorial = new GeneralButton(this, (1920/2)-1, 800, "Tutorial", () => {
-            window.open("https://youtube.com")
+            window.open("https://youtu.be/USiJaHC0720")
         })
     }
 

@@ -26,7 +26,7 @@ export class GameScene extends Phaser.Scene {
     create() {
         if(this.isShaderOn) this.cameras.main.setPostPipeline(GameDefaultShaderPipeline)
 
-        this.scene.scene.add.text(0, 0, "Version: 0.2.2")
+        // this.scene.scene.add.text(0, 0, "Version: 0.2.2")
         let gameLevel = new GameLevel(this, this.levelConfig)
     }
 

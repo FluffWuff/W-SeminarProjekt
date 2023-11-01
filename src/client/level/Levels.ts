@@ -174,17 +174,21 @@ export class GameLevel implements ButtonListener {
     }
 
     onOver(button: MemoryAddress) {
-        //hides all fields not matching the same value in the grid - highlighting only fields who match
-        //responsible for managing the highlighting if hoverd over a routine field
+        //Hiding all Gridfields not matching with the current RoutineField's value => Creating highlighting effect
+        //        
         if (button instanceof RoutineField) {
             for (var i = 0; i < this.grid.length; i++) {
                 for (var j = 0; j < this.grid[i].length; j++) {
                     let gridElement = this.grid[i][j]
 
+                    //Setze alle Gridfields aus, die nicht den gleichen Wert des momentanen Routinefields haben
                     if (button.text != gridElement.text) {
+                        //Alle Elemente, die jemals in onOver() oder onDown() geändert werden,
+                        //müssen wieder zurückgesetzt werden, falls noch vorhanden
                         this.changeableElementList.push(gridElement)
                         gridElement.setTint(GF_HIDE_COLOR)
                     }
+
                     if ((!this.isPlayLineHorizontal && this.playLinePos[0] == gridElement.gridPosX) ||
                         (this.isPlayLineHorizontal && this.playLinePos[0] == gridElement.gridPosY)) {
                         //console.log(gridElement.text)
@@ -200,8 +204,11 @@ export class GameLevel implements ButtonListener {
         }
 
         let gridField = <GridField>button
-        //responsible for indicating next playLine
-        //adds highlighting effect
+        /**
+         * Andeutung der nächsten Spiellinie im nächsten Zug.
+         * Dabei wird die momentane Spiellinie am GridField horizontal 
+         * bzw. vertikal imaginär gedreht und angedeutet.  
+         */
         if (!this.isPlayLineHorizontal) {
             let rowFieldList = this.grid[gridField.gridPosY]
             for (var i = 0; i < rowFieldList.length; i++) {
@@ -220,12 +227,12 @@ export class GameLevel implements ButtonListener {
                 }
             }
         }
+        //Markierung des GridFields
+        gridField.setTint(GF_SELECTED_COLOR)
 
         this.calculateLegalField(gridField)
 
 
-        //highlighting/indicating the current hoverd button/memoryadress - not original but makes it easier to play with
-        button.setTint(GF_SELECTED_COLOR)
     }
 
     onDown(button: MemoryAddress) {
@@ -259,7 +266,7 @@ export class GameLevel implements ButtonListener {
     }
 
     onOut(button: Button) {
-        if (this.changeableElementList.length != 0) {
+        if (this.changeableElementList.length != 0) { //Es gibt nichts zum zurücksetzten
             console.log(button.text + " " + this.changeableElementList.length)
             for (var i = 0; i < this.changeableElementList.length; i++) {
                 let elementToChange = this.changeableElementList[i]
@@ -337,6 +344,7 @@ export class GameLevel implements ButtonListener {
 
                 playableRoutine.isClickedDown = true
                 console.log("Clickeddown successfully: " + playableRoutine.text)
+                this.legalGridField = null //preventing a bug, wenn routine legal & clickedDown used as preMove aber nextRoutineField nicht clickedDown ist, muss illegal sein, ist ses aber net
                 this.changeableElementList.pop()
 
 
@@ -386,13 +394,11 @@ export class GameLevel implements ButtonListener {
             } while (startRoutineField.nextRoutineField != null)
 
             let nextRoutineField = this.routines[i][howMuchIsClickedDown]
-
             //Checke ob der Wert des Spielfelds == Wert des aktuellen Routinefelds ist
             if (gridField.text == nextRoutineField.text) {
                 this.changeableElementList.push(nextRoutineField)
 
                 if (!nextRoutineField.isDestroyed) nextRoutineField.setTint(GF_SELECTED_COLOR) // after routine is completed, this line can produce a lot of errors
-
 
                 this.legalGridField = gridField
                 this.playableRoutines.push(nextRoutineField)
