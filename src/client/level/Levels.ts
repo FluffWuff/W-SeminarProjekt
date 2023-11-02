@@ -5,12 +5,13 @@ import { RoutineField, GridField } from './MemoryAddressFields.js';
 
 type MemoryAddress = Button
 
+type Routine = RoutineField[]
+
 export class GameLevel implements ButtonListener {
 
     public currentTimer: number
     public grid: GridField[][]
-
-    public routines: RoutineField[][] = []
+    public routines: Routine[] = []
 
     private overflow: OverflowManager
 
@@ -29,7 +30,7 @@ export class GameLevel implements ButtonListener {
      */
     private playLinePos: [number, GridField[]] = [0, []]
     
-    private legalGridField: GridField = null
+    //private legalGridField: GridField = null
 
     private playableRoutines: RoutineField[] = []
     private completedRoutines: number = 0
@@ -230,29 +231,28 @@ export class GameLevel implements ButtonListener {
         //Markierung des GridFields
         gridField.setTint(GF_SELECTED_COLOR)
 
-        this.calculateLegalField(gridField)
+        this.calculateLegalRoutineFields(gridField)
 
 
     }
 
     onDown(button: MemoryAddress) {
+        //Keine Klick-Interaktion mit einem Routinefield möglich
         if (button instanceof RoutineField) return
+
         let gridField = <GridField>button
         console.log(this.playableRoutines)
 
-        //check if button press is within yellow playline
+        //Überprüfung, ob der Spielzug innerhalb der Gelbenspiellinie ist
         console.log("Playline is horizontal: " + this.isPlayLineHorizontal + ", pos: " + this.playLinePos[0])
-        console.log()
-        if (this.isPlayLineHorizontal && gridField.gridPosY == this.playLinePos[0]) {
-            this.calculateMove(gridField.gridPosX, this.playLinePos[0])
+        if ((this.isPlayLineHorizontal && gridField.gridPosY == this.playLinePos[0]) || (!this.isPlayLineHorizontal && gridField.gridPosX == this.playLinePos[0])) {
+            this.calculateMove(gridField.gridPosX, gridField.gridPosY)
             console.log("Calculated actual move")
             return
-        } else if (gridField.gridPosX == this.playLinePos[0]) {
-            this.calculateMove(this.playLinePos[0], gridField.gridPosY)
-            console.log("Calculated actual move")
-            return
-        }
+        } 
 
+        //Wenn der Spielzug nicht innerhalb der gelben Spiellinie ist, muss
+        //der gehörige Pre-Move (Der Move zuvor, um überhaupt den aktuellen Move zu machen) berechnet werden
         console.log("Move was outside of playline - Calculating pre-move...")
         if (this.isPlayLineHorizontal) {
             this.calculateMove(gridField.gridPosX, this.playLinePos[0]) //Pre-Move
@@ -287,15 +287,20 @@ export class GameLevel implements ButtonListener {
             this.changeableElementList = []
         }
         this.playableRoutines = []
-        this.legalGridField = null
+        //this.legalGridField = null
         this.updatePlayLine(this.playLinePos[0])
     }
 
-    private calculateMove(x: number, y: number) {
-        let gridField = this.grid[y][x]
-        this.calculateLegalField(gridField)
+    /**
+     * Berechnung eines Moves mit dem aktuellen GridFields und Spiellinie mit den gegeben GridField Koordinaten
+     * @param gridPosX X-Koordinate des GridFields
+     * @param gridPosY Y-Koordinate des Grdifields
+     */
+    private calculateMove(gridPosX: number, gridPosY: number) {
+        let gridField = this.grid[gridPosY][gridPosX]
+        this.calculateLegalRoutineFields(gridField)
         //IF YES -> ILLEGAL move
-        if (this.legalGridField == null) {
+        if (this.playableRoutines.length == 0) { //Keine Legalen Routinen spielbar
             console.log("ILLEGAL MOVE!!!!")
             //reset all non-completed routines
             this.overflow.addElementToOverflow(gridField.text) //Erhöhe overflow um 1 mit dem Element, welches gedrückt wurde
@@ -311,26 +316,31 @@ export class GameLevel implements ButtonListener {
                 }
             }
         }
-        // IF YES -> LEGAL MOVE
-        else if ((this.legalGridField != null) ||
-            (gridField.gridPosX == this.legalGridField.gridPosX && gridField.gridPosY == this.legalGridField.gridPosY && gridField.text == this.legalGridField.text)) {
+        // Else -> LEGAL MOVE, because playableRoutines is not empty => Legal Routine play move available
+        else {
             console.log("Legal Move!")
             console.log("Playable routines: ")
             this.playableRoutines.forEach((it) => console.log(it))
 
-            let toBeCleared = this.routines.filter(routine => {
-                const routineIndices = routine.map(field => field.routineLineNumber)
-                return this.playableRoutines.every(pR => !routineIndices.includes(pR.routineLineNumber))
+            //Alle Routinen, die nicht in this.playableRoutines enthalten sind und resetet werden müssen:
+            let routinesRequiringReset = this.routines.filter(routine => {
+                //Verhindert, dass noch nicht angefangene Routinen resetet werden (Optimierung)
+                if(!routine[0].isClickedDown) return false 
+                const routineIndex = routine[0].routineLineNumber 
+                console.log(routineIndex)
+                // Wenn return statement wahr ist, dann ist kein Index in playableRoutines vorhanden, der den Index dieser routine entspricht.
+                return this.playableRoutines.every(pR => routineIndex != pR.routineLineNumber) 
             })
-            console.log(toBeCleared.length)
-            for (var i = 0; i < toBeCleared.length; i++) {
-                for (var j = 0; j < toBeCleared[i].length; j++) {
-                    if (toBeCleared[i][j].isDestroyed) continue
 
-                    console.log(toBeCleared[i][j])
+            console.log(routinesRequiringReset.length)
+            for (var i = 0; i < routinesRequiringReset.length; i++) {
+                for (var j = 0; j < routinesRequiringReset[i].length; j++) {
+                    if (routinesRequiringReset[i][j].isDestroyed) continue //Bereits vollendete Routinen und graphisch entfernt
 
-                    toBeCleared[i][j].isClickedDown = false
-                    toBeCleared[i][j].setTint(GF_PRIMARY_COLOR)
+                    //console.log(toBeCleared[i][j])
+
+                    routinesRequiringReset[i][j].isClickedDown = false
+                    routinesRequiringReset[i][j].setTint(GF_PRIMARY_COLOR)
 
                 }
             }
@@ -344,12 +354,13 @@ export class GameLevel implements ButtonListener {
 
                 playableRoutine.isClickedDown = true
                 console.log("Clickeddown successfully: " + playableRoutine.text)
-                this.legalGridField = null //preventing a bug, wenn routine legal & clickedDown used as preMove aber nextRoutineField nicht clickedDown ist, muss illegal sein, ist ses aber net
+                
+                //this.legalGridField = null //preventing a bug, wenn routine legal & clickedDown used as preMove aber nextRoutineField nicht clickedDown ist, muss illegal sein, ist ses aber net
                 this.changeableElementList.pop()
 
 
                 //console.log(playableRoutine.nextRoutineField)
-                if (playableRoutine.nextRoutineField == null) {
+                if (playableRoutine.nextRoutineField == null) { //Ende der Routine erreicht => Routine completed
                     console.log("Routine fertig, routineLineNumber: " + playableRoutine.routineLineNumber)
 
                     //Delete Routine from list:
@@ -366,6 +377,8 @@ export class GameLevel implements ButtonListener {
                 }
 
             }
+            //Reset all current playableRoutines because they have been played
+            this.playableRoutines = []
             if (this.routines.length == this.completedRoutines) {
                 console.log("WIN!")
                 this.win()
@@ -381,7 +394,9 @@ export class GameLevel implements ButtonListener {
         console.log(gridField.text)
     }
 
-    private calculateLegalField(gridField: GridField) {
+    private calculateLegalRoutineFields(gridField: GridField) {
+        this.playableRoutines = []
+
         //highlighting matching fields in the routine
         // if hovered field is in playline && in routine front -> highlight (yellow) routine field
         for (var i = 0; i < this.routines.length; i++) {
@@ -398,11 +413,10 @@ export class GameLevel implements ButtonListener {
             if (gridField.text == nextRoutineField.text) {
                 this.changeableElementList.push(nextRoutineField)
 
-                if (!nextRoutineField.isDestroyed) nextRoutineField.setTint(GF_SELECTED_COLOR) // after routine is completed, this line can produce a lot of errors
+                //Markiere die spielbare Routinefield
+                if (!nextRoutineField.isDestroyed) nextRoutineField.setTint(GF_SELECTED_COLOR)
 
-                this.legalGridField = gridField
                 this.playableRoutines.push(nextRoutineField)
-
             }
 
         }
