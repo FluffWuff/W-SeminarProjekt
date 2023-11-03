@@ -2,7 +2,7 @@ import { GameDefaultShaderPipeline } from "../shader/GameShaderPipeline.js";
 import { GameLevelConfig, LEVEL_1_GAME_LEVEL_CONFIG, LEVEL_2_GAME_LEVEL_CONFIG, LEVEL_3_GAME_LEVEL_CONFIG, LEVEL_4_GAME_LEVEL_CONFIG, LEVEL_5_GAME_LEVEL_CONFIG, GF_HIDE_COLOR, GF_HIDE_SELECTED_COLOR, GF_PRIMARY_COLOR, GF_SELECTED_COLOR } from "../util/Constants.js"
 import { GeneralButton } from '../util/GeneralButton.js';
 
-let isShaderOn = true
+export let isShaderOn = true
 
 export class SelectionScene extends Phaser.Scene {
 
@@ -21,8 +21,22 @@ export class SelectionScene extends Phaser.Scene {
 
     }
     create() {
-        this.cameras.main.setPostPipeline(GameDefaultShaderPipeline)
+        if(isShaderOn) this.cameras.main.setPostPipeline(GameDefaultShaderPipeline)
         
+        let memoryMatrix = this.add.text((1920 / 2)-1, 100 - 35, "Memory Matrix", {
+            //align: 'center',
+            font: '64px DS-DIGII',
+            shadow: {
+                fill: true,
+                stroke: true,
+                offsetX: 5,
+                offsetY: 5,
+                color: "#"+GF_HIDE_SELECTED_COLOR.toString(16)
+            }
+        })
+        memoryMatrix.setOrigin(0.5, 0)
+        memoryMatrix.setTint(parseInt(GF_SELECTED_COLOR.toString(16), 16))
+
         //Die x- und y-Koordinate mancher Buttons wurde um 1 Pixel verschoben,
         //damit diese nicht mit dem Shader kollidieren und abgeschnitten werden
         let level1Box = new LevelSelectionButton(this, (1920 / 2)-1, 199, "Level 1", LEVEL_1_GAME_LEVEL_CONFIG)
@@ -41,7 +55,7 @@ export class SelectionScene extends Phaser.Scene {
         //Tutorial:
         let tutorial = new GeneralButton(this, (1920/2)-1, 800, "Tutorial", () => {
             window.open("https://youtu.be/USiJaHC0720")
-        })
+        }, 58)
     }
 
 

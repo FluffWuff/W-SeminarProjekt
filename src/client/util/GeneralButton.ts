@@ -2,9 +2,9 @@ import { GF_HIDE_COLOR, GF_PRIMARY_COLOR, GF_SELECTED_COLOR, GF_HIDE_SELECTED_CO
 
 export class GeneralButton extends Phaser.GameObjects.Group {
 
-    constructor(scene: Phaser.Scene, x: number, y: number, text: string, pointerDown: Function) {
+    constructor(scene: Phaser.Scene, x: number, y: number, text: string, pointerDown: Function, textSize?: number) {
         super(scene)
-
+        if(textSize == undefined) textSize = 64
         let rectangle = this.scene.add.rectangle(x, y, 220, 75)
 
         rectangle.setFillStyle(GF_HIDE_COLOR)
@@ -12,7 +12,7 @@ export class GeneralButton extends Phaser.GameObjects.Group {
 
         let textElement = this.scene.add.text(x - 105, y - 35, text, {
             align: 'center',
-            font: '64px DS-DIGII',
+            font: textSize+'px DS-DIGII',
         })
 
         this.add(textElement)

@@ -19,7 +19,7 @@ export class GameLevel implements ButtonListener {
      * Elemente (Gridfields, Routinefields), die bei onOver() oder onDown() geändert wurden
      * In onOut() werden diese Elemente in ihren Urzustand gebracht.
      */
-    private changeableElementList: MemoryAddress[] = []
+    private elementsRequiringReset: MemoryAddress[] = []
 
 
     private isPlayLineHorizontal = true
@@ -29,7 +29,7 @@ export class GameLevel implements ButtonListener {
      * Das Zweite Element in diesem Pair ist die eine Kopie des Gridfields an der Stelle des index
      */
     private playLinePos: [number, GridField[]] = [0, []]
-    
+
     //private legalGridField: GridField = null
 
     private playableRoutines: RoutineField[] = []
@@ -47,13 +47,13 @@ export class GameLevel implements ButtonListener {
     }
 
     public win() {
-        this.scene.scene.start("SinglePlayerScreen")
+        this.scene.scene.start("EndingScene", {isGameWon: true})
 
     }
 
     public loose() {
         console.log("VERLOREN")
-        this.scene.scene.start("SinglePlayerScreen")
+        this.scene.scene.start("EndingScene", {isGameWon: false})
     }
 
     private fillGridUp() {
@@ -89,7 +89,7 @@ export class GameLevel implements ButtonListener {
         for (var i = 0; i < routinenAmount; i++) {
             this.routines[i] = []
             let isVer = Math.random() < 0.5 //Entscheide ob vertikal oder horizontal die Routine beginnen soll
-            
+
             /**
              * Startpunkt der aller ersten Routinenfield in der Routine
              * lastH und lastV werden in der kommenden for-loop immer abwechselnd erneuert
@@ -101,7 +101,7 @@ export class GameLevel implements ButtonListener {
             let previousRoutineField: RoutineField = null
 
             //Bestimmung der momentanten Routinenlänge mit einer Mindestlänge
-            let routinenLength = Math.round(Math.random() * (this.levelConfig.maxRoutineLength - this.levelConfig.minRoutineLength) + this.levelConfig.minRoutineLength)  
+            let routinenLength = Math.round(Math.random() * (this.levelConfig.maxRoutineLength - this.levelConfig.minRoutineLength) + this.levelConfig.minRoutineLength)
             for (var j = 0; j < routinenLength; j++) {
                 let text = this.grid[lastV][lastH].text
                 //Graphische Erstellung des Routinefields
@@ -117,7 +117,7 @@ export class GameLevel implements ButtonListener {
 
                 //Setze die Referenz vom vorherigen Routinefield zum jetzigen Routinefield, wenn das jetzige nicht das letzte ist
                 if (previousRoutineField != null)
-                    previousRoutineField.nextRoutineField = currentRoutineField 
+                    previousRoutineField.nextRoutineField = currentRoutineField
                 previousRoutineField = currentRoutineField
                 this.routines[i][j] = currentRoutineField
 
@@ -186,7 +186,7 @@ export class GameLevel implements ButtonListener {
                     if (button.text != gridElement.text) {
                         //Alle Elemente, die jemals in onOver() oder onDown() geändert werden,
                         //müssen wieder zurückgesetzt werden, falls noch vorhanden
-                        this.changeableElementList.push(gridElement)
+                        this.elementsRequiringReset.push(gridElement)
                         gridElement.setTint(GF_HIDE_COLOR)
                     }
 
@@ -216,14 +216,14 @@ export class GameLevel implements ButtonListener {
                 let changeableButton = rowFieldList[i]
                 if (changeableButton.gridPosX != this.playLinePos[0]) {
                     changeableButton.setTint(GF_HIGHLIGHT_COLOR)
-                    this.changeableElementList.push(changeableButton)
+                    this.elementsRequiringReset.push(changeableButton)
                 }
             }
         } else {
             for (var i = 0; i < this.grid.length; i++) {
                 let changeableButton = this.grid[i][gridField.gridPosX]
                 if (changeableButton.gridPosY != this.playLinePos[0]) {
-                    this.changeableElementList.push(changeableButton)
+                    this.elementsRequiringReset.push(changeableButton)
                     changeableButton.setTint(GF_HIGHLIGHT_COLOR)
                 }
             }
@@ -249,7 +249,7 @@ export class GameLevel implements ButtonListener {
             this.calculateMove(gridField.gridPosX, gridField.gridPosY)
             console.log("Calculated actual move")
             return
-        } 
+        }
 
         //Wenn der Spielzug nicht innerhalb der gelben Spiellinie ist, muss
         //der gehörige Pre-Move (Der Move zuvor, um überhaupt den aktuellen Move zu machen) berechnet werden
@@ -266,10 +266,10 @@ export class GameLevel implements ButtonListener {
     }
 
     onOut(button: Button) {
-        if (this.changeableElementList.length != 0) { //Es gibt nichts zum zurücksetzten
-            console.log(button.text + " " + this.changeableElementList.length)
-            for (var i = 0; i < this.changeableElementList.length; i++) {
-                let elementToChange = this.changeableElementList[i]
+        if (this.elementsRequiringReset.length != 0) { //Es gibt nichts zum zurücksetzten
+            console.log(button.text + " " + this.elementsRequiringReset.length)
+            for (var i = 0; i < this.elementsRequiringReset.length; i++) {
+                let elementToChange = this.elementsRequiringReset[i]
                 console.log(i + " " + elementToChange.isSmall)
                 if (elementToChange.isSmall) {
                     let routineField = <RoutineField>elementToChange
@@ -284,10 +284,9 @@ export class GameLevel implements ButtonListener {
                 let routineField = <RoutineField>button
                 if (routineField.isClickedDown) routineField.setTint(GF_HIDE_COLOR)
             }
-            this.changeableElementList = []
+            this.elementsRequiringReset = []
         }
         this.playableRoutines = []
-        //this.legalGridField = null
         this.updatePlayLine(this.playLinePos[0])
     }
 
@@ -325,52 +324,54 @@ export class GameLevel implements ButtonListener {
             //Alle Routinen, die nicht in this.playableRoutines enthalten sind und resetet werden müssen:
             let routinesRequiringReset = this.routines.filter(routine => {
                 //Verhindert, dass noch nicht angefangene Routinen resetet werden (Optimierung)
-                if(!routine[0].isClickedDown) return false 
-                const routineIndex = routine[0].routineLineNumber 
+                if (!routine[0].isClickedDown) return false
+                const routineIndex = routine[0].routineLineNumber
                 console.log(routineIndex)
                 // Wenn return statement wahr ist, dann ist kein Index in playableRoutines vorhanden, der den Index dieser routine entspricht.
-                return this.playableRoutines.every(pR => routineIndex != pR.routineLineNumber) 
+                return this.playableRoutines.every(pR => routineIndex != pR.routineLineNumber)
             })
 
             console.log(routinesRequiringReset.length)
+            //Zurücksetzen der Routinen in routinesRequiringReset
             for (var i = 0; i < routinesRequiringReset.length; i++) {
                 for (var j = 0; j < routinesRequiringReset[i].length; j++) {
                     if (routinesRequiringReset[i][j].isDestroyed) continue //Bereits vollendete Routinen und graphisch entfernt
-
                     //console.log(toBeCleared[i][j])
-
                     routinesRequiringReset[i][j].isClickedDown = false
                     routinesRequiringReset[i][j].setTint(GF_PRIMARY_COLOR)
-
                 }
             }
 
-            //1. routine
+            //Markierung und Bespielung der Routinen
             for (var i = 0; i < this.playableRoutines.length; i++) {
-                let playableRoutine = this.playableRoutines[i] // if undefined => routine is finished at index i
+                let playableRoutine = this.playableRoutines[i]
 
+                //Sicherheitscheck, da in der Vergangenheit Probleme mit 
+                //den graphischen Elementen sich ergeben haben
                 if (playableRoutine.isDestroyed) continue
                 playableRoutine.setTint(GF_HIDE_COLOR)
-
                 playableRoutine.isClickedDown = true
                 console.log("Clickeddown successfully: " + playableRoutine.text)
-                
-                //this.legalGridField = null //preventing a bug, wenn routine legal & clickedDown used as preMove aber nextRoutineField nicht clickedDown ist, muss illegal sein, ist ses aber net
-                this.changeableElementList.pop()
+
+                //Entfernung des RoutineFields aus der Liste zum zurücksetzen:
+                let elementsRequiringResetIndex = this.elementsRequiringReset.indexOf(playableRoutine)
+                this.elementsRequiringReset.splice(elementsRequiringResetIndex, 1)
 
 
                 //console.log(playableRoutine.nextRoutineField)
-                if (playableRoutine.nextRoutineField == null) { //Ende der Routine erreicht => Routine completed
+                //Keine weitere Routinefield vorhanden, dann Routinenende erreicht
+                if (playableRoutine.nextRoutineField == null) {
                     console.log("Routine fertig, routineLineNumber: " + playableRoutine.routineLineNumber)
 
-                    //Delete Routine from list:
+                    //Graphische Entfernung der Routine:
                     let completedRoutine = this.routines[playableRoutine.routineLineNumber]
                     for (let i = 0; i < completedRoutine.length; i++) {
                         let completedRoutineField = this.completedRoutines[i]
-                        let changeableElementListIndex = this.changeableElementList.indexOf(completedRoutineField)
-                        if (changeableElementListIndex != -1) { //Routinefield ist zum ändern gequeued
-                            this.changeableElementList.splice(changeableElementListIndex, 1)
-                        }
+
+                        //let changeableElementListIndex = this.elementsRequiringReset.indexOf(completedRoutineField)
+                        //if (changeableElementListIndex != -1) { //Routinefield ist zum reseten hinzugefügt worden
+                        //    this.elementsRequiringReset.splice(changeableElementListIndex, 1)
+                        //}
                         completedRoutine[i].destroy()
                     }
                     this.completedRoutines++
@@ -411,7 +412,7 @@ export class GameLevel implements ButtonListener {
             let nextRoutineField = this.routines[i][howMuchIsClickedDown]
             //Checke ob der Wert des Spielfelds == Wert des aktuellen Routinefelds ist
             if (gridField.text == nextRoutineField.text) {
-                this.changeableElementList.push(nextRoutineField)
+                this.elementsRequiringReset.push(nextRoutineField)
 
                 //Markiere die spielbare Routinefield
                 if (!nextRoutineField.isDestroyed) nextRoutineField.setTint(GF_SELECTED_COLOR)
