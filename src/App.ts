@@ -32,3 +32,4 @@ var config: Phaser.Types.Core.GameConfig = {
 }
 
 new Phaser.Game(config)
+

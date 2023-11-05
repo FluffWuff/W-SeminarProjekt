@@ -47,15 +47,15 @@ export class GameLevel implements ButtonListener {
     }
 
     public win() {
-        this.scene.scene.start("EndingScene", {isGameWon: true})
+        this.scene.scene.start("EndingScene", { isGameWon: true })
 
     }
 
     public loose() {
-        console.log("VERLOREN")
-        this.scene.scene.start("EndingScene", {isGameWon: false})
+        this.scene.scene.start("EndingScene", { isGameWon: false })
     }
 
+    //Zuständig um das Grid zu generieren
     private fillGridUp() {
         let gridText = this.scene.add.text(GF_START_POS_X * this.scene.cameras.main.centerX * 2, GF_START_POS_Y * this.scene.cameras.main.centerY * 2, "memory matrix", {
             align: 'left',
@@ -139,14 +139,14 @@ export class GameLevel implements ButtonListener {
 
     }
 
-
-    private createTimer() {
+    //Erweiterungsmöglichkeit
+    /*private createTimer() {
 
     }
 
     private createDetails() {
 
-    }
+    }*/
 
     private updatePlayLine(pos: number) {
         //Alte Spiellinie zurücksetzen 
@@ -368,10 +368,6 @@ export class GameLevel implements ButtonListener {
                     for (let i = 0; i < completedRoutine.length; i++) {
                         let completedRoutineField = this.completedRoutines[i]
 
-                        //let changeableElementListIndex = this.elementsRequiringReset.indexOf(completedRoutineField)
-                        //if (changeableElementListIndex != -1) { //Routinefield ist zum reseten hinzugefügt worden
-                        //    this.elementsRequiringReset.splice(changeableElementListIndex, 1)
-                        //}
                         completedRoutine[i].destroy()
                     }
                     this.completedRoutines++
@@ -395,6 +391,10 @@ export class GameLevel implements ButtonListener {
         console.log(gridField.text)
     }
 
+    /**
+     * Berechung aller legalen RoutineFields, die angeklickt werden dürfen, in Abhängikeit von @gridField
+     * @param gridField GridField, welches angeklickt werden soll
+     */
     private calculateLegalRoutineFields(gridField: GridField) {
         this.playableRoutines = []
 
@@ -423,6 +423,9 @@ export class GameLevel implements ButtonListener {
         }
     }
 
+    /**
+     * Erstellung einer MemoryAddres mit zufälligem Wert, falls @text null ist.
+     * */
     private createMemoryAddress(x: number, y: number, isSmall: boolean, text?: string, gridPosX?: number, gridPosY?: number, routinePos?: number): MemoryAddress {
         if (text == null) {
             let number = Math.round(Math.random() * (8 - 2) + 2)

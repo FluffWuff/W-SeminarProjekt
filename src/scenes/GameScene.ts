@@ -18,16 +18,15 @@ export class GameScene extends Phaser.Scene {
         this.isShaderOn = data.isShaderOn
     }
 
-
+    //Laden der Background Assets der MemoryAddresses
     preload() {
-        this.load.image(GF_BACKGROUND_32, 'assets/bitmaps/ma32.png')
-        this.load.image(GF_BACKGROUND_64, 'assets/bitmaps/ma64.png')
+        this.load.image(GF_BACKGROUND_32, 'assets/pictures/ma32.png')
+        this.load.image(GF_BACKGROUND_64, 'assets/pictures/ma64.png')
     }
 
     create() {
         if(isShaderOn) this.cameras.main.setPostPipeline(GameDefaultShaderPipeline)
 
-        // this.scene.scene.add.text(0, 0, "Version: 0.2.2")
         let gameLevel = new GameLevel(this, this.levelConfig)
     }
 
